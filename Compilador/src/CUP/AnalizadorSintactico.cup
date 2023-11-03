@@ -1,0 +1,220 @@
+package CUP;
+
+import java_cup.runtime.ComplexSymbolFactory.ComplexSymbol;
+import java_cup.runtime.ComplexSymbolFactory.Location;
+
+import java_cup.runtime.*;
+
+import Symbols.*;
+
+import java.io.PrintStream;
+import java.util.HashMap;
+
+class Parser;
+
+parser code {:
+    private HashMap<String, T>tsymbols = new HashMap<>();
+
+    public int getSymbolValueInteger(String id){
+        return tsymbols.get(id);
+    }
+    
+    public boolean getSymbolValueBoolean(String id){
+        int aux = tsymbols.get(id);
+        if (aux == 1) return true;
+        return false;
+    }
+    
+    public void addSymbol(String id, int value){
+        if(tsymbols.get(id) == null){
+            tsymbols.put(id,value);
+        } else{
+            tsymbols.replace(id,value);
+        }
+    }
+    
+    @Override
+    public String toString(){
+        String res = "";
+        if(tsymbols.size() == 0){
+            res = "No hay variables declaradas";
+        }else{
+            String fmt = "%-8s: %f";
+            tsymbols.forEach((k,v) -> res += String.format(fmt,k,v) + "\n");
+        }
+        return res;
+    }
+
+    /**
+    * Nos permite saber si se ha detectado un error:
+    *   -true: Se ha detectado error
+    *   -false: No se ha detectado error
+    * En caso de true el funcionamiento será limitado hasta finalizar de procesar
+    * la entrada, caso donde lo vuelve a poner a false.
+    **/
+    private boolean errorSemantic = false;
+    
+    /*
+        -------------------GESTION DE ERRORES---------------------------
+    */
+
+    @Override
+    public void unrecovered_syntax_error(Symbol cur_token) throws Exception{
+        report_error("Error sintactico irrecuperable", cur_token);
+        done_parsing();
+    }
+
+    @Override
+    public void syntax_error(Symbol cur_token){
+        report_error("de sintaxis", cur_token);
+    }
+    
+    @Override
+    public void report_error(String message, Object info){
+        StringBuilder msg = new StringBuilder("ERROR");
+        if(info instaceof Symbol){
+            ComplexSymbol token = (ComplexSymbol) info;
+            Location l = token.getLeft();
+
+            if(l != null){
+                msg.append(" (fila: )" + l.getLine() + ", columna: " + l.getColumn() + ")");
+            }
+        }
+        msg.append(": " + message);
+        
+        System.err.println(msg);
+    }
+
+    @Override
+    public void report_fatal_error(String message, Object info) throws Exception{
+        report_error("Error irrecuperable (" + message + ")", info);
+        done_parsing();
+    }
+    
+:}
+
+
+terminal String IDENTIFICADOR;
+terminal int valor;
+
+//Terminales de operaciones aritméticas
+terminal SUMA, RESTA, MULTIPLICACION, DIVISION, MODULO;
+//Terminales de operaciones relacionales
+terminal EQUIVALENTE, MENORIGUAL, MAYORIGUAL, MAYOR, MENOR, NOEQUIVALENTE;
+//Terminales de operaciones lógicas
+terminal AND, OR, XOR, NOT;
+//Parentesis, llaves y asignacion
+terminal LPARENTESIS, RPARENTESIS, LLLAVE, RLLAVE, ASIGNACION;
+//Puntos y comas
+terminal PUNTOCOMA, COMA, PUNTO;
+//Condicionales
+terminal IF, ELSE;
+//Bucles
+terminal WHILE, DO, FOR;
+//Palabras reservadas
+terminal BREAK, RETURN, PRINT, PRINTLN, ENTER, ENTERLN, MAIN, INT, BOOL, CONST;
+
+non terminal SymbolBloque Bloque;
+non terminal SymbolBloqueP BloqueP;
+
+non terminal SymbolProcedimiento Procedimiento;
+non terminal SymbolFuncion Funcion;
+non terminal SymbolMain Main;
+
+
+//Hay que realizar cambios en funcion y procedimiento
+
+non terminal SymbolAtributos Atributos;
+non terminal SymbolAtributosP AtributosP;
+
+non terminal SymbolInstrucciones Instrucciones;
+
+non terminal SymbolDatos Datos;
+
+
+non terminal SymbolCondicionales Condicionales;
+non terminal SymbolBucles Bucles;
+non terminal SymbolWhile While;
+non terminal SymbolDo Do;
+non terminal SymbolReturns Returns;
+
+non terminal SymbolAsignaciones Asignaciones;
+non terminal SymbolAsignacionesP AsignacionesP;
+
+non terminal SymbolID ID;
+
+non terminal SysmbolElse Else;
+
+non terminal SymbolExpresiones Expresiones;
+non terminal SymbolExpresionesP ExpresionesP;
+non terminal SymbolExp Exp;
+
+non terminal SymbolOperacionesAritmeticas OperacionesAritmeticas;
+non terminal SymbolOperacionesAritmeticasP OperacionesAritmeticasP;
+non terminal SymbolMultiplicacionDivision MultiplicacionDivision;
+non terminal SymbolMultiplicacionDivisionP MultiplicacionDivisionP;
+
+non terminal SymbolF F;
+
+
+start with Bloque;
+
+Bloque ::= BloqueP Bloque   {::}
+           | {::} 
+    ;
+
+BloqueP ::= Procedimiento   {::}
+            | Funcion       {::}
+            | Main          {::}
+    ;
+
+Main ::= MAIN LLLAVE Instrucciones RLLAVE   {::}
+    ;
+
+Instrucciones ::= Asignaciones  {::}
+                    | Condicionales {::}
+                    | Bucles        {::}
+                    | Returns       {::}
+                    | {::} 
+    ;
+
+Asignaciones ::= Datos IDENTIFICADOR ASIGNACION AsignacionesP PUNTOCOMA  {::}
+                | IDENTIFICADOR ASIGNACION AsignacionesP PUNTOCOMA       {::}
+    ;
+
+AsignacionesP ::= ID    {::}
+                | OperacionesAritmeticas    {::}
+    ;
+
+Condicionales ::= IF LPARENTESIS Expresiones RPARENTESIS LLLAVE Instrucciones RLLAVE Else   {::}
+    ;
+
+Else ::= ELSE LLLAVE Instrucciones RLLAVE   {::}
+            | {::}  
+    ;
+
+Bucles ::= While    {::}
+            | Do    {::}
+    ;
+
+While ::= WHILE LPARENTESIS Expresiones RPARENTESIS LLLAVE Instrucciones RLLAVE {::}
+    ;
+
+Do ::= DO LLLAVE Instrucciones RLLAVE WHILE LPARENTESIS Expresiones RPARENTESIS PUNTOCOMA {::}
+    ;
+
+Returns ::= RETURN ID PUNTOCOMA {::}
+    ;
+
+Datos ::= INT {::}
+        | BOOL {::}
+    ;
+
+ID ::= IDENTIFICADOR {::}
+        | valor      {::}
+    ;
+
+//Falta Expresiones y Operaciones Aritméticas
+
+
+
