@@ -111,12 +111,12 @@ cond_else = else
 cond_while = while
 cond_for = for
 cond_do = do
-cond_switch = switch
-cond_case = case
-cond_default = default
+//cond_switch = switch
+//cond_case = case
+//cond_default = default
 
 //Palabras reservadas
-res_null = null
+//res_null = null
 res_break = break
 res_return = return
 res_print = print
@@ -124,6 +124,8 @@ res_println = println
 res_enter = enter
 res_enterln = enterln
 res_main = main
+res_procedimiento = proc
+res_funcion = funt
 //--Tipo de Datos
 int = int
 bool = boolean
@@ -203,6 +205,8 @@ blockcomment = \/\*({character}|{digit}|{space})*\*\/
         {res_enter}                    { return symbol(ParserSym.ENTER); }
         {res_enterln}                  { return symbol(ParserSym.ENTERLN); }
         {res_main}                     { return symbol(ParserSym.MAIN); }
+        {res_procedimiento}            { return symbol(ParserSym.PROC); }
+        {res_funcion}                  { return symbol(ParserSym.FUNT); }
         //--Tipo de datos
         {int}                          { return symbol(ParserSym.INT); }
         {bool}                         { return symbol(ParserSym.BOOL); }

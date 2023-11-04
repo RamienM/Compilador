@@ -112,7 +112,7 @@ terminal IF, ELSE;
 //Bucles
 terminal WHILE, DO, FOR;
 //Palabras reservadas
-terminal BREAK, RETURN, PRINT, PRINTLN, ENTER, ENTERLN, MAIN, INT, BOOL, CONST;
+terminal BREAK, RETURN, PRINT, PRINTLN, ENTER, ENTERLN, MAIN, INT, BOOL, CONST, PROC, FUNT;
 
 non terminal SymbolBloque Bloque;
 non terminal SymbolBloqueP BloqueP;
@@ -168,6 +168,19 @@ BloqueP ::= Procedimiento   {::}
             | Main          {::}
     ;
 
+Procedimiento ::= PROC IDENTIFICADOR LPARENTESIS Atributos RPARENTESIS LLLAVE Instrucciones RLLAVE  {::}
+    ;
+
+Funcion ::= FUNT IDENTIFICADOR LPARENTESIS Atributos RPARENTESIS LLLAVE Instrucciones RLLAVE  {::}
+    ;
+
+Atributos ::= Datos IDENTIFICADOR AtributosP    {::}
+    ;
+
+AtributosP ::= COMA Atributos   {::}
+                |   {::}
+    ;
+
 Main ::= MAIN LLLAVE Instrucciones RLLAVE   {::}
     ;
 
@@ -214,7 +227,24 @@ ID ::= IDENTIFICADOR {::}
         | valor      {::}
     ;
 
-//Falta Expresiones y Operaciones Aritméticas
+Expresiones ::= ExpresionesP AND Expresiones    {::}
+                |ExpresionesP OR Expresiones    {::}
+                |ExpresionesP XOR Expresiones   {::}
+                |ExpresionesP NOT Expresiones   {::}
+                |ExpresionesP                   {::}
+    ;
 
+ExpresionesP ::= Exp EQUIVALENTE ExpresionesP       {::}
+                |Exp NOEQUIVALENTE ExpresionesP     {::}
+                |Exp MAYORIGUAL ExpresionesP        {::}
+                |Exp MAYOR ExpresionesP             {::}
+                |Exp MENORIGUAL ExpresionesP        {::}
+                |Exp MENOR ExpresionesP             {::}
+                |Exp                                {::}
+    ;
+
+Exp ::= LPARENTESIS Expresiones RPARENTESIS      {::}
+        | ID                                     {::}
+    ;
 
 
