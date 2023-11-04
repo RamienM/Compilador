@@ -8,6 +8,13 @@ package Symbols;
  *
  * @author Ruben
  */
-public class SymbolInstrucciones extends SymbolBase{
+public class SymbolFinalOperaciones extends SymbolBase{
     
+    public SymbolFinalOperaciones(int valor) {
+        super("FinalOperaciones", valor);
+    }
+    
+    public SymbolFinalOperaciones() {
+        super();
+    }
 }

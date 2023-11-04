@@ -8,6 +8,6 @@ package Symbols;
  *
  * @author Ruben
  */
-public class SymbolDo {
+public class SymbolDo extends SymbolBase{
     
 }

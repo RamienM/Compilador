@@ -8,6 +8,6 @@ package Symbols;
  *
  * @author Ruben
  */
-public class SymbolAsignacionesP {
+public class SymbolAsignacionesP extends SymbolBase{
     
 }

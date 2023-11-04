@@ -8,6 +8,6 @@ package Symbols;
  *
  * @author Ruben
  */
-public class SymbolCondicionales {
+public class SymbolCondicionales extends SymbolBase{
     
 }

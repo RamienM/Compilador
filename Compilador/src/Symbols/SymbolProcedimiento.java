@@ -6,8 +6,8 @@ package Symbols;
 
 /**
  *
- * @author Ruben
+ * @author Usuario
  */
-public class SymbolF {
+public class SymbolProcedimiento extends SymbolBase{
     
 }

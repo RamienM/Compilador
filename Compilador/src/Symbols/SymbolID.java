@@ -8,6 +8,6 @@ package Symbols;
  *
  * @author Ruben
  */
-public class SymbolID {
+public class SymbolID extends SymbolBase{
     
 }

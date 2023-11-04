@@ -122,7 +122,8 @@ non terminal SymbolFuncion Funcion;
 non terminal SymbolMain Main;
 
 
-//Hay que realizar cambios en funcion y procedimiento
+non terminal SymbolFuncion Funcion;
+non terminal SymbolProcedimiento Procedimiento;
 
 non terminal SymbolAtributos Atributos;
 non terminal SymbolAtributosP AtributosP;
@@ -142,6 +143,8 @@ non terminal SymbolAsignaciones Asignaciones;
 non terminal SymbolAsignacionesP AsignacionesP;
 
 non terminal SymbolID ID;
+non terminal SymbolID IDI;
+non terminal SymbolID IDB;
 
 non terminal SysmbolElse Else;
 
@@ -153,8 +156,7 @@ non terminal SymbolOperacionesAritmeticas OperacionesAritmeticas;
 non terminal SymbolOperacionesAritmeticasP OperacionesAritmeticasP;
 non terminal SymbolMultiplicacionDivision MultiplicacionDivision;
 non terminal SymbolMultiplicacionDivisionP MultiplicacionDivisionP;
-
-non terminal SymbolF F;
+non terminal SymbolFinalOperaciones FinalOperaciones;
 
 
 start with Bloque;
@@ -223,9 +225,36 @@ Datos ::= INT {::}
         | BOOL {::}
     ;
 
-ID ::= IDENTIFICADOR {::}
-        | valor      {::}
-    ;
+
+ID::=
+    IDI
+            {::}
+    |IDB    
+            {::}
+        ;
+
+IDI ::= 
+    IDENTIFICADOR:v 
+            {:
+                int valor = getSymbolValue(v);
+                RESULT = new SymbolID((int)valor);
+            :}
+    | valor :v
+            {:
+                RESULT = new SymbolID((int)v);
+            :}
+        ;
+IDB ::= 
+    IDENTIFICADOR:v 
+            {:
+                boolean valor = getSymbolValue(v);
+                RESULT = new SymbolID((boolean)valor);
+            :}
+    | valor :v
+            {:
+                RESULT = new SymbolID((boolean)v);
+            :}
+        ;
 
 Expresiones ::= ExpresionesP AND Expresiones    {::}
                 |ExpresionesP OR Expresiones    {::}
@@ -247,4 +276,54 @@ Exp ::= LPARENTESIS Expresiones RPARENTESIS      {::}
         | ID                                     {::}
     ;
 
+OperacionesAritmeticas::= 
+    MultiplicacionDivision:v1 OperacionesAritmeticasP:v2    
+            {:
+                RESULT = new SymbolOperacionesAritmeticas((int) v1.value, v2);
+            :}
+        ;
 
+OperacionesAritmeticasP::= 
+    SUMA MultiplicacionDivision:v1 OperacionesAritmeticasP:v2      
+            {:
+                RESULT = new SymbolOperacionesAritmeticasP(ParserSym.SUMA,(int) v1.value, v2);
+            :}
+    | RESTA MultiplicacionDivision:v1 OperacionesAritmeticasP:v2  
+            {:
+                RESULT = new SymbolOperacionesAritmeticasP(ParserSym.RESTA,(int) v1.value, v2);
+            :}
+        ;
+
+MultiplicacionDivision::= 
+    FinalOperaciones:v1 MultiplicacionDivisionP:v2  
+            {:
+                RESULT = new SymbolMultiplicacionDivision((int) v1.value, v2);
+            :}
+        ;
+
+MultiplicacionDivisionP ::= 
+    MULTIPLICACION FinalOperaciones:v1 MultiplicacionDivisionP:v2 
+            {:
+                RESULT = new SymbolMultiplicacionDivisionP(ParserSym.MULTIPLICACION,(int) v1.value, v2);
+            :}
+    |DIVISION FinalOperaciones:v1 MultiplicacionDivisionP:v2      
+            {:
+                RESULT = new SymbolMultiplicacionDivisionP(ParserSym.DIVISION,(int) v1.value, v2);
+            :}
+    |MODULO FinalOperaciones:v1 MultiplicacionDivisionP:v2        
+            {:
+                RESULT = new SymbolMultiplicacionDivisionP(ParserSym.MODULO,(int) v1.value, v2);
+            :}
+        ;
+
+FinalOperaciones ::=
+    LPARENTESIS OperacionesAritmeticas:v RPARENTESIS 
+            {:
+                RESULT = new SymbolFinalOperaciones((int)v.value);
+            :}
+    |ID:v
+            {:
+                RESULT = new SymbolFinalOperaciones((int)v.value);
+            :}
+        ;
+    

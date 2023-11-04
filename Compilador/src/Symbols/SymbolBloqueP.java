@@ -8,6 +8,6 @@ package Symbols;
  *
  * @author Ruben
  */
-public class SymbolBloqueP {
+public class SymbolBloqueP extends SymbolBase{
     
 }
