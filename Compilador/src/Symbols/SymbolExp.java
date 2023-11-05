@@ -9,5 +9,15 @@ package Symbols;
  * @author Ruben
  */
 public class SymbolExp extends SymbolBase{
+    public SymbolExp(int valor){
+        super("Exp",valor);
+    }
     
+    public SymbolExp(boolean valor){
+        super("Exp",valor);
+    }
+    
+    public SymbolExp(){
+        super();
+    }
 }

@@ -9,5 +9,15 @@ package Symbols;
  * @author Ruben
  */
 public class SymbolID extends SymbolBase{
+    public SymbolID(int valor){
+        super("ID",valor);
+    }
     
+    public SymbolID(boolean valor){
+        super("ID",valor);
+    }
+    
+    public SymbolID(){
+        super();
+    }
 }

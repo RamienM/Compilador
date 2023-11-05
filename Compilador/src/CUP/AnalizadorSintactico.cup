@@ -151,6 +151,7 @@ non terminal SysmbolElse Else;
 non terminal SymbolExpresiones Expresiones;
 non terminal SymbolExpresionesP ExpresionesP;
 non terminal SymbolExp Exp;
+non terminal SymbolExp ExpB;
 
 non terminal SymbolOperacionesAritmeticas OperacionesAritmeticas;
 non terminal SymbolOperacionesAritmeticasP OperacionesAritmeticasP;
@@ -161,69 +162,116 @@ non terminal SymbolFinalOperaciones FinalOperaciones;
 
 start with Bloque;
 
-Bloque ::= BloqueP Bloque   {::}
-           | {::} 
-    ;
+Bloque ::= 
+    BloqueP Bloque   
+            {::}
+    | 
+            {::} 
+        ;
 
-BloqueP ::= Procedimiento   {::}
-            | Funcion       {::}
-            | Main          {::}
-    ;
+BloqueP ::= 
+    Procedimiento   
+            {::}
+    | Funcion       
+            {::}
+    | Main             
+            {::}
+        ;
 
-Procedimiento ::= PROC IDENTIFICADOR LPARENTESIS Atributos RPARENTESIS LLLAVE Instrucciones RLLAVE  {::}
-    ;
+Procedimiento ::= 
+    PROC IDENTIFICADOR LPARENTESIS Atributos RPARENTESIS LLLAVE Instrucciones RLLAVE  
+            {::}
+        ;
 
-Funcion ::= FUNT IDENTIFICADOR LPARENTESIS Atributos RPARENTESIS LLLAVE Instrucciones RLLAVE  {::}
-    ;
+Funcion ::= 
+    FUNT IDENTIFICADOR LPARENTESIS Atributos RPARENTESIS LLLAVE Instrucciones RLLAVE  
+            {::}
+        ;
 
-Atributos ::= Datos IDENTIFICADOR AtributosP    {::}
-    ;
+Atributos ::= 
+    Datos IDENTIFICADOR AtributosP    
+            {::}
+        ;
 
-AtributosP ::= COMA Atributos   {::}
-                |   {::}
-    ;
+AtributosP ::= 
+    COMA Atributos   
+            {::}
+    |   
+            {::}
+        ;
 
-Main ::= MAIN LLLAVE Instrucciones RLLAVE   {::}
-    ;
+Main ::= 
+    MAIN LLLAVE Instrucciones RLLAVE   
+            {::}
+        ;
 
-Instrucciones ::= Asignaciones  {::}
-                    | Condicionales {::}
-                    | Bucles        {::}
-                    | Returns       {::}
-                    | {::} 
-    ;
+Instrucciones ::= 
+    Asignaciones  
+            {::}
+    | Condicionales 
+            {::}
+    | Bucles        
+            {::}
+    | Returns       
+            {::}
+    | 
+            {::} 
+        ;
 
-Asignaciones ::= Datos IDENTIFICADOR ASIGNACION AsignacionesP PUNTOCOMA  {::}
-                | IDENTIFICADOR ASIGNACION AsignacionesP PUNTOCOMA       {::}
-    ;
+Asignaciones ::= 
+    Datos IDENTIFICADOR ASIGNACION AsignacionesP PUNTOCOMA  
+            {::}
+    |IDENTIFICADOR ASIGNACION AsignacionesP PUNTOCOMA       
+            {::}
+        ;
 
-AsignacionesP ::= ID    {::}
-                | OperacionesAritmeticas    {::}
-    ;
+AsignacionesP ::= 
+    ID    
+            {::}
+    | OperacionesAritmeticas    
+            {::}
+        ;
 
-Condicionales ::= IF LPARENTESIS Expresiones RPARENTESIS LLLAVE Instrucciones RLLAVE Else   {::}
-    ;
+Condicionales ::= 
+    IF LPARENTESIS Expresiones RPARENTESIS LLLAVE Instrucciones RLLAVE Else   
+            {::}
+        ;
 
-Else ::= ELSE LLLAVE Instrucciones RLLAVE   {::}
-            | {::}  
-    ;
+Else ::= 
+    ELSE LLLAVE Instrucciones RLLAVE  
+            {::}
+    | 
+            {::}  
+        ;
 
-Bucles ::= While    {::}
-            | Do    {::}
-    ;
+Bucles ::= 
+    While    
+            {::}
+    | Do    
+            {::}
+        ;
 
-While ::= WHILE LPARENTESIS Expresiones RPARENTESIS LLLAVE Instrucciones RLLAVE {::}
-    ;
+While ::= 
+    WHILE LPARENTESIS Expresiones RPARENTESIS LLLAVE Instrucciones RLLAVE 
+            {::}
+        ;
 
-Do ::= DO LLLAVE Instrucciones RLLAVE WHILE LPARENTESIS Expresiones RPARENTESIS PUNTOCOMA {::}
-    ;
+Do ::= 
+    DO LLLAVE Instrucciones RLLAVE WHILE LPARENTESIS Expresiones RPARENTESIS PUNTOCOMA 
+            {::}
+        ;
 
-Returns ::= RETURN ID PUNTOCOMA {::}
-    ;
+Returns ::= 
+    RETURN ID PUNTOCOMA 
+            {::}
+        ;
 
-Datos ::= INT {::}
-        | BOOL {::}
-    ;
+Datos ::= 
+    INT 
+            {::}
+    | BOOL 
+            {::}
+        ;
 
 
 ID::=
@@ -256,25 +304,82 @@ IDB ::=
             :}
         ;
 
-Expresiones ::= ExpresionesP AND Expresiones    {::}
-                |ExpresionesP OR Expresiones    {::}
-                |ExpresionesP XOR Expresiones   {::}
-                |ExpresionesP NOT Expresiones   {::}
-                |ExpresionesP                   {::}
-    ;
+Expresiones ::= 
+    ExpresionesP:v1 AND Expresiones:v2    
+            {:
+                RESULT = new SymbolExpresiones((boolean)v1.value, ParseSym.AND,v2);
+            :}
+    |ExpresionesP:v1 OR Expresiones:v2    
+            {:
+                RESULT = new SymbolExpresiones((boolean)v1.value, ParseSym.OR,v2);
+            :}
+    |ExpresionesP:v1 XOR Expresiones:v2   
+            {:
+                RESULT = new SymbolExpresiones((boolean)v1.value, ParseSym.XOR,v2);
+            :}
+    |NOT ExpB:v                
+            {:
+                RESULT = new SymbolExpresiones(ParseSym.NOT,(boolean) v.value);
+            :}
+    |ExpresionesP:v                   
+            {:
+                RESULT = new SymbolExpresiones((boolean)v.value);
+            :}
+        ;
 
-ExpresionesP ::= Exp EQUIVALENTE ExpresionesP       {::}
-                |Exp NOEQUIVALENTE ExpresionesP     {::}
-                |Exp MAYORIGUAL ExpresionesP        {::}
-                |Exp MAYOR ExpresionesP             {::}
-                |Exp MENORIGUAL ExpresionesP        {::}
-                |Exp MENOR ExpresionesP             {::}
-                |Exp                                {::}
-    ;
+ExpresionesP ::= 
+    Exp:v1 EQUIVALENTE ExpresionesP:v2       
+            {:
+                RESULT = new SymbolExpresionesP((int) v1.value, ParseSym.EQUIVALENTE,v2);
+            :}
+    |Exp:v1 NOEQUIVALENTE ExpresionesP:v2     
+            {:
+                RESULT = new SymbolExpresionesP((int) v1.value, ParseSym.NOEQUIVALENTE,v2);
+            :}
+    |IDI:v1 MAYORIGUAL ExpresionesP:v2        
+            {:
+                RESULT = new SymbolExpresionesP((int) v1.value, ParseSym.MAYORIGUAL,v2);
+            :}
+    |IDI:v1 MAYOR ExpresionesP:v2             
+            {:
+                RESULT = new SymbolExpresionesP((int) v1.value, ParseSym.MAYOR,v2);
+            :}
+    |IDI:v1 MENORIGUAL ExpresionesP:v2        
+            {:
+                RESULT = new SymbolExpresionesP((int) v1.value, ParseSym.MENORIGUAL,v2);
+            :}
+    |IDI:v1 MENOR ExpresionesP:v2             
+            {:
+                RESULT = new SymbolExpresionesP((int) v1.value, ParseSym.MENOR,v2);
+            :}
+        ;
 
-Exp ::= LPARENTESIS Expresiones RPARENTESIS      {::}
-        | ID                                     {::}
-    ;
+Exp ::= 
+    LPARENTESIS Expresiones:v RPARENTESIS      
+            {:
+                RESULT = new SymbolExp((boolean)v.value);
+            :}
+    | IDI:v                                     
+            {:
+                RESULT = new SymbolExp((int) v.value);
+            :}
+    | IDB:v                                     
+            {:
+                RESULT = new SymbolExp((boolean) v.value);
+            :}
+        ;
+
+ExpB ::= 
+    LPARENTESIS Expresiones:v RPARENTESIS      
+            {:
+                RESULT = new SymbolExp((boolean)v.value);
+            :}
+    | IDB:v                                     
+            {:
+                RESULT = new SymbolExp((boolean) v.value);
+            :}
+        ;
+
 
 OperacionesAritmeticas::= 
     MultiplicacionDivision:v1 OperacionesAritmeticasP:v2    
@@ -321,7 +426,7 @@ FinalOperaciones ::=
             {:
                 RESULT = new SymbolFinalOperaciones((int)v.value);
             :}
-    |ID:v
+    |IDI:v
             {:
                 RESULT = new SymbolFinalOperaciones((int)v.value);
             :}
