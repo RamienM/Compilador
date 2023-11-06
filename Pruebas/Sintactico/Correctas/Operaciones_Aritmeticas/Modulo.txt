@@ -1,0 +1,5 @@
+main{
+	int a = 10 mod 2;
+	int b = 10 mod 3;
+	int c = 10 mod 4;
+}

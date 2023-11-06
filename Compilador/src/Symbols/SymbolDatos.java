@@ -10,4 +10,12 @@ package Symbols;
  */
 public class SymbolDatos extends SymbolBase{
     
+    public SymbolDatos(int valor){
+        super("Datos",valor);
+    }
+    
+    public SymbolDatos(){
+        super();
+    }
+    
 }

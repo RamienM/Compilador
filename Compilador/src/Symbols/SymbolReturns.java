@@ -9,5 +9,17 @@ package Symbols;
  * @author Ruben
  */
 public class SymbolReturns extends SymbolBase{
+        
+    public SymbolReturns(int valor){
+        super("Returns",valor);
+    }
+    
+    public SymbolReturns(boolean valor){
+        super("Returns",valor);
+    }
+    
+    public SymbolReturns(){
+        super();
+    }
     
 }

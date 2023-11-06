@@ -1,0 +1,27 @@
+int hola
+2 + 2 - 4 == 0
+10 > 8 >= 2 * 4 <= 9 < 100 / 10 mod 1
+! and or xr
+boolean castana
+final int PI = 3
+
+{ } ( ) ; , . if
+else
+case
+switch break return print println
+enter enterln while do for default
+
+true false null ] main
+
+
+//Posibles errores
++20
++ 20
+
+elseif
+
+dowhile
+
+/*
+Hola como estas
+*/

@@ -247,7 +247,7 @@ Else ::=
 Bucles ::= 
     While    
             {::}
-    | Do    
+    |Do    
             {::}
         ;
 
@@ -262,8 +262,10 @@ Do ::=
         ;
 
 Returns ::= 
-    RETURN ID PUNTOCOMA 
-            {::}
+    RETURN ID:v PUNTOCOMA 
+            {:
+                RESULT = new SymbolReturns(v.value);
+            :}
         ;
 
 Datos ::= 
@@ -275,9 +277,9 @@ Datos ::=
 
 
 ID::=
-    IDI
+    IDI:v
             {::}
-    |IDB    
+    |IDB:v    
             {::}
         ;
 
