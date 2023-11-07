@@ -6,6 +6,7 @@ import java_cup.runtime.ComplexSymbolFactory.Location;
 import java_cup.runtime.*;
 
 import Symbols.*;
+import CUP.*;
 
 import java.io.PrintStream;
 import java.util.HashMap;
@@ -13,16 +14,10 @@ import java.util.HashMap;
 class Parser;
 
 parser code {:
-    private HashMap<String, T>tsymbols = new HashMap<>();
+    private HashMap<String, Integer>tsymbols = new HashMap<>();
 
     public int getSymbolValueInteger(String id){
-        return tsymbols.get(id);
-    }
-    
-    public boolean getSymbolValueBoolean(String id){
-        int aux = tsymbols.get(id);
-        if (aux == 1) return true;
-        return false;
+        return (int) tsymbols.get(id);
     }
     
     public void addSymbol(String id, int value){
@@ -33,16 +28,13 @@ parser code {:
         }
     }
     
-    @Override
-    public String toString(){
-        String res = "";
-        if(tsymbols.size() == 0){
-            res = "No hay variables declaradas";
-        }else{
+    public void printVars(PrintStream out) {
+        if (tsymbols.size() == 0) {
+            out.println("No hi ha variables declarades");
+        } else {
             String fmt = "%-8s: %f";
-            tsymbols.forEach((k,v) -> res += String.format(fmt,k,v) + "\n");
+            tsymbols.forEach((k,v) -> out.println(String.format(fmt,k,v)));
         }
-        return res;
     }
 
     /**
@@ -72,7 +64,7 @@ parser code {:
     @Override
     public void report_error(String message, Object info){
         StringBuilder msg = new StringBuilder("ERROR");
-        if(info instaceof Symbol){
+        if(info instanceof Symbol){
             ComplexSymbol token = (ComplexSymbol) info;
             Location l = token.getLeft();
 
@@ -106,52 +98,51 @@ terminal AND, OR, XOR, NOT;
 //Parentesis, llaves y asignacion
 terminal LPARENTESIS, RPARENTESIS, LLLAVE, RLLAVE, ASIGNACION;
 //Puntos y comas
-terminal PUNTOCOMA, COMA, PUNTO;
+terminal PUNTOCOMA, COMA;
+//Palabras reservadas PUNTOS no usadas de momento
+// ---PUNTO
 //Condicionales
 terminal IF, ELSE;
 //Bucles
-terminal WHILE, DO, FOR;
+terminal WHILE, DO;
+//Palabras reservadas BUCLES no usadas de momento
+//---FOR
 //Palabras reservadas
-terminal BREAK, RETURN, PRINT, PRINTLN, ENTER, ENTERLN, MAIN, INT, BOOL, CONST, PROC, FUNT;
+terminal RETURN, MAIN, INT, BOOL, PROC, FUNT;
+//Palabras reservadas no usadas de momento
+//---BREAK, PRINT, PRINTLN, ENTER, ENTERLN,CONST
 
-non terminal SymbolBloque Bloque;
-non terminal SymbolBloqueP BloqueP;
+non terminal Bloque;
+non terminal BloqueP;
 
-non terminal SymbolProcedimiento Procedimiento;
-non terminal SymbolFuncion Funcion;
-non terminal SymbolMain Main;
+non terminal Procedimiento;
+non terminal Funcion;
+non terminal Main;
 
+non terminal Atributos;
+non terminal AtributosP;
 
-non terminal SymbolFuncion Funcion;
-non terminal SymbolProcedimiento Procedimiento;
+non terminal Instrucciones;
 
-non terminal SymbolAtributos Atributos;
-non terminal SymbolAtributosP AtributosP;
-
-non terminal SymbolInstrucciones Instrucciones;
-
-non terminal SymbolDatos Datos;
+non terminal Datos;
 
 
-non terminal SymbolCondicionales Condicionales;
-non terminal SymbolBucles Bucles;
-non terminal SymbolWhile While;
-non terminal SymbolDo Do;
-non terminal SymbolReturns Returns;
+non terminal Condicionales;
+non terminal Bucles;
+non terminal While;
+non terminal Do;
+non terminal Returns;
 
-non terminal SymbolAsignaciones Asignaciones;
-non terminal SymbolAsignacionesP AsignacionesP;
+non terminal Asignaciones;
+non terminal AsignacionesP;
 
 non terminal SymbolID ID;
-non terminal SymbolID IDI;
-non terminal SymbolID IDB;
 
-non terminal SysmbolElse Else;
+non terminal Else;
 
 non terminal SymbolExpresiones Expresiones;
 non terminal SymbolExpresionesP ExpresionesP;
 non terminal SymbolExp Exp;
-non terminal SymbolExp ExpB;
 
 non terminal SymbolOperacionesAritmeticas OperacionesAritmeticas;
 non terminal SymbolOperacionesAritmeticasP OperacionesAritmeticasP;
@@ -264,7 +255,7 @@ Do ::=
 Returns ::= 
     RETURN ID:v PUNTOCOMA 
             {:
-                RESULT = new SymbolReturns(v.value);
+                //RESULT = new SymbolReturns(v.value);
             :}
         ;
 
@@ -275,53 +266,33 @@ Datos ::=
             {::}
         ;
 
-
-ID::=
-    IDI:v
-            {::}
-    |IDB:v    
-            {::}
-        ;
-
-IDI ::= 
+ID ::= 
     IDENTIFICADOR:v 
             {:
-                int valor = getSymbolValue(v);
-                RESULT = new SymbolID((int)valor);
+                int valor = getSymbolValueInteger(v);
+                RESULT = new SymbolID(valor);
             :}
     | valor :v
             {:
                 RESULT = new SymbolID((int)v);
             :}
         ;
-IDB ::= 
-    IDENTIFICADOR:v 
-            {:
-                boolean valor = getSymbolValue(v);
-                RESULT = new SymbolID((boolean)valor);
-            :}
-    | valor :v
-            {:
-                RESULT = new SymbolID((boolean)v);
-            :}
-        ;
-
 Expresiones ::= 
     ExpresionesP:v1 AND Expresiones:v2    
             {:
-                RESULT = new SymbolExpresiones((boolean)v1.value, ParseSym.AND,v2);
+                RESULT = new SymbolExpresiones((boolean)v1.value, ParserSym.AND,v2);
             :}
     |ExpresionesP:v1 OR Expresiones:v2    
             {:
-                RESULT = new SymbolExpresiones((boolean)v1.value, ParseSym.OR,v2);
+                RESULT = new SymbolExpresiones((boolean)v1.value, ParserSym.OR,v2);
             :}
     |ExpresionesP:v1 XOR Expresiones:v2   
             {:
-                RESULT = new SymbolExpresiones((boolean)v1.value, ParseSym.XOR,v2);
+                RESULT = new SymbolExpresiones((boolean)v1.value, ParserSym.XOR,v2);
             :}
-    |NOT ExpB:v                
+    |NOT Exp:v                
             {:
-                RESULT = new SymbolExpresiones(ParseSym.NOT,(boolean) v.value);
+                RESULT = new SymbolExpresiones(ParserSym.NOT,v);
             :}
     |ExpresionesP:v                   
             {:
@@ -332,53 +303,38 @@ Expresiones ::=
 ExpresionesP ::= 
     Exp:v1 EQUIVALENTE ExpresionesP:v2       
             {:
-                RESULT = new SymbolExpresionesP((int) v1.value, ParseSym.EQUIVALENTE,v2);
+                RESULT = new SymbolExpresionesP((int)v1.value, ParserSym.EQUIVALENTE,v2);
             :}
     |Exp:v1 NOEQUIVALENTE ExpresionesP:v2     
             {:
-                RESULT = new SymbolExpresionesP((int) v1.value, ParseSym.NOEQUIVALENTE,v2);
+                RESULT = new SymbolExpresionesP((int)v1.value, ParserSym.NOEQUIVALENTE,v2);
             :}
-    |IDI:v1 MAYORIGUAL ExpresionesP:v2        
+    |ID:v1 MAYORIGUAL ExpresionesP:v2        
             {:
-                RESULT = new SymbolExpresionesP((int) v1.value, ParseSym.MAYORIGUAL,v2);
+                RESULT = new SymbolExpresionesP((int)v1.value, ParserSym.MAYORIGUAL,v2);
             :}
-    |IDI:v1 MAYOR ExpresionesP:v2             
+    |ID:v1 MAYOR ExpresionesP:v2             
             {:
-                RESULT = new SymbolExpresionesP((int) v1.value, ParseSym.MAYOR,v2);
+                RESULT = new SymbolExpresionesP((int)v1.value, ParserSym.MAYOR,v2);
             :}
-    |IDI:v1 MENORIGUAL ExpresionesP:v2        
+    |ID:v1 MENORIGUAL ExpresionesP:v2        
             {:
-                RESULT = new SymbolExpresionesP((int) v1.value, ParseSym.MENORIGUAL,v2);
+                RESULT = new SymbolExpresionesP((int)v1.value, ParserSym.MENORIGUAL,v2);
             :}
-    |IDI:v1 MENOR ExpresionesP:v2             
+    |ID:v1 MENOR ExpresionesP:v2             
             {:
-                RESULT = new SymbolExpresionesP((int) v1.value, ParseSym.MENOR,v2);
+                RESULT = new SymbolExpresionesP((int)v1.value, ParserSym.MENOR,v2);
             :}
         ;
 
 Exp ::= 
     LPARENTESIS Expresiones:v RPARENTESIS      
             {:
-                RESULT = new SymbolExp((boolean)v.value);
+                RESULT = new SymbolExp((int)v.value);
             :}
-    | IDI:v                                     
+    | ID:v                                     
             {:
-                RESULT = new SymbolExp((int) v.value);
-            :}
-    | IDB:v                                     
-            {:
-                RESULT = new SymbolExp((boolean) v.value);
-            :}
-        ;
-
-ExpB ::= 
-    LPARENTESIS Expresiones:v RPARENTESIS      
-            {:
-                RESULT = new SymbolExp((boolean)v.value);
-            :}
-    | IDB:v                                     
-            {:
-                RESULT = new SymbolExp((boolean) v.value);
+                RESULT = new SymbolExp((int)v.value);
             :}
         ;
 
@@ -386,40 +342,40 @@ ExpB ::=
 OperacionesAritmeticas::= 
     MultiplicacionDivision:v1 OperacionesAritmeticasP:v2    
             {:
-                RESULT = new SymbolOperacionesAritmeticas((int) v1.value, v2);
+                RESULT = new SymbolOperacionesAritmeticas((int)v1.value, v2);
             :}
         ;
 
 OperacionesAritmeticasP::= 
     SUMA MultiplicacionDivision:v1 OperacionesAritmeticasP:v2      
             {:
-                RESULT = new SymbolOperacionesAritmeticasP(ParserSym.SUMA,(int) v1.value, v2);
+                RESULT = new SymbolOperacionesAritmeticasP(ParserSym.SUMA,(int)v1.value, v2);
             :}
     | RESTA MultiplicacionDivision:v1 OperacionesAritmeticasP:v2  
             {:
-                RESULT = new SymbolOperacionesAritmeticasP(ParserSym.RESTA,(int) v1.value, v2);
+                RESULT = new SymbolOperacionesAritmeticasP(ParserSym.RESTA,(int)v1.value, v2);
             :}
         ;
 
 MultiplicacionDivision::= 
     FinalOperaciones:v1 MultiplicacionDivisionP:v2  
             {:
-                RESULT = new SymbolMultiplicacionDivision((int) v1.value, v2);
+                RESULT = new SymbolMultiplicacionDivision((int)v1.value, v2);
             :}
         ;
 
 MultiplicacionDivisionP ::= 
     MULTIPLICACION FinalOperaciones:v1 MultiplicacionDivisionP:v2 
             {:
-                RESULT = new SymbolMultiplicacionDivisionP(ParserSym.MULTIPLICACION,(int) v1.value, v2);
+                RESULT = new SymbolMultiplicacionDivisionP(ParserSym.MULTIPLICACION,(int)v1.value, v2);
             :}
     |DIVISION FinalOperaciones:v1 MultiplicacionDivisionP:v2      
             {:
-                RESULT = new SymbolMultiplicacionDivisionP(ParserSym.DIVISION,(int) v1.value, v2);
+                RESULT = new SymbolMultiplicacionDivisionP(ParserSym.DIVISION,(int)v1.value, v2);
             :}
     |MODULO FinalOperaciones:v1 MultiplicacionDivisionP:v2        
             {:
-                RESULT = new SymbolMultiplicacionDivisionP(ParserSym.MODULO,(int) v1.value, v2);
+                RESULT = new SymbolMultiplicacionDivisionP(ParserSym.MODULO,(int)v1.value, v2);
             :}
         ;
 
@@ -428,7 +384,7 @@ FinalOperaciones ::=
             {:
                 RESULT = new SymbolFinalOperaciones((int)v.value);
             :}
-    |IDI:v
+    |ID:v
             {:
                 RESULT = new SymbolFinalOperaciones((int)v.value);
             :}

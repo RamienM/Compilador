@@ -13,10 +13,6 @@ public class SymbolExp extends SymbolBase{
         super("Exp",valor);
     }
     
-    public SymbolExp(boolean valor){
-        super("Exp",valor);
-    }
-    
     public SymbolExp(){
         super();
     }

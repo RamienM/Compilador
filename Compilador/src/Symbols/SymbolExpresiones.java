@@ -3,7 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package Symbols;
-
+import CUP.ParserSym;
 /**
  *
  * @author Usuario
@@ -29,9 +29,9 @@ public class SymbolExpresiones extends SymbolBase{
             valor = valorExpresionesP;
         }else{
             switch(operacion){
-                case ParseSym.AND -> valor = valorExpresionesP && (boolean)valorExpresiones.value;
-                case ParseSym.OR -> valor = valorExpresionesP || (boolean)valorExpresiones.value;
-                case ParseSym.XOR -> valor = valorExpresionesP && (boolean)valorExpresiones.value;
+                case ParserSym.AND -> valor = valorExpresionesP && (boolean)valorExpresiones.value;
+                case ParserSym.OR -> valor = valorExpresionesP || (boolean)valorExpresiones.value;
+                case ParserSym.XOR -> valor = valorExpresionesP && (boolean)valorExpresiones.value;
             }
         }
        this.value = valor;
@@ -39,14 +39,14 @@ public class SymbolExpresiones extends SymbolBase{
     }
     
     public SymbolExpresiones(int operacion,
-            SymbolExpresiones valorExpresiones){
+            SymbolExp valorExp){
         super("Expresiones",false);
         boolean valor = false;
         
-        if((valorExpresiones == null)||(valorExpresiones.isEmpty())){
+        if((valorExp == null)||(valorExp.isEmpty())){
             System.out.println("No se ha recibido ninguna expresion");
         }else{
-            valor = !(boolean)valorExpresiones.value;
+            valor = !(boolean)valorExp.value;
         }
        this.value = valor;
        this.operacion = operacion;

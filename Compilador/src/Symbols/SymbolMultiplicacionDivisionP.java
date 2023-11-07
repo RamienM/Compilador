@@ -3,7 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package Symbols;
-
+import CUP.ParserSym;
 /**
  *
  * @author Ruben
@@ -26,8 +26,8 @@ public class SymbolMultiplicacionDivisionP extends SymbolBase{
             valor = valorFinalOperaciones;
         }else{
             switch(valorMultiplicacionDivisionP.getOperacion()){
-                case ParseSym.MULTIPLICACION -> valor = valorFinalOperaciones * (int)valorMultiplicacionDivisionP.value;
-                case ParseSym.DIVISION -> {
+                case ParserSym.MULTIPLICACION -> valor = valorFinalOperaciones * (int)valorMultiplicacionDivisionP.value;
+                case ParserSym.DIVISION -> {
                     int division = (int)valorMultiplicacionDivisionP.value;
                     if(division == 0){
                         System.out.println("Error");
@@ -35,7 +35,7 @@ public class SymbolMultiplicacionDivisionP extends SymbolBase{
                         valor = valorFinalOperaciones / division;
                     }
                 }
-                case ParseSym.MODULO -> {
+                case ParserSym.MODULO -> {
                     int modulo = (int)valorMultiplicacionDivisionP.value;
                     if(modulo == 0){
                         System.out.println("Error");

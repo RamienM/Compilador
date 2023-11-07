@@ -3,6 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package Symbols;
+import CUP.ParserSym;
 
 /**
  *
@@ -23,8 +24,8 @@ public class SymbolOperacionesAritmeticasP extends SymbolBase{
             valor = valorMultiplicacionDivision;
         }else{
             switch(valorOperacionesAritmeticasP.getOperacion()){
-                case ParseSym.SUMA -> valor = valorMultiplicacionDivision + (int)valorOperacionesAritmeticasP.value;
-                case ParseSym.RESTA -> valor = valorMultiplicacionDivision - (int)valorOperacionesAritmeticasP.value;
+                case ParserSym.SUMA -> valor = valorMultiplicacionDivision + (int)valorOperacionesAritmeticasP.value;
+                case ParserSym.RESTA -> valor = valorMultiplicacionDivision - (int)valorOperacionesAritmeticasP.value;
             }
         }
         this.operacion = operacion;
