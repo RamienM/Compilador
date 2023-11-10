@@ -9,9 +9,6 @@ import CUP.ParserSym;
 %%
 %public                                                     //Será una clase pública
 %class Lector                                               //Nombre de la clase
-%implements java_cup.runtime.Scanner
-%function next_token
-%type java_cup.runtime.Symbol
 
 %cup                                                        //Analizador sintantico
 
@@ -27,7 +24,7 @@ import CUP.ParserSym;
         private ComplexSymbol symbol(int type) {
             //Sumamos 1 para la primera linea y columna para que no sea 0
             Location izquierda = new Location(yyline+1,yycolumn+1);
-            Location derecha = new Location(yyline+1,yycolumn+yytext().lenght()+1);
+            Location derecha = new Location(yyline+1,yycolumn+yytext().length()+1);
             return new ComplexSymbol(ParserSym.terminalNames[type],type, izquierda, derecha);
         }
 
@@ -37,7 +34,7 @@ import CUP.ParserSym;
         private Symbol symbol(int type, Object value) {
              //Sumamos 1 para la primera linea y columna para que no sea 0
              Location izquierda = new Location(yyline+1,yycolumn+1);
-             Location derecha = new Location(yyline+1,yycolumn+yytext().lenght()+1);
+             Location derecha = new Location(yyline+1,yycolumn+yytext().length()+1);
              return new ComplexSymbol(ParserSym.terminalNames[type],type, izquierda, derecha,value);
         }
 %}
@@ -54,9 +51,9 @@ character = [a-zA-Z]
 
 //Numeros
 digit = [0-9]
-signo = [\-]?
+//signo = [\-]?
 //--Enteros
-integer = 0 | ({signo}[1-9]{digit}*)
+integer = 0 | ([1-9]{digit}*)
 
 //booleano
 booleanTrue = true
@@ -221,4 +218,4 @@ blockcomment = \/\*({character}|{digit}|{space})*\*\/
         //Identificadores
         {id}                           { return symbol(ParserSym.IDENTIFICADOR, this.yytext()); }
 
-        [^]                            { return symbol(ParserSym.ERROR);}
+        [^]                            { return symbol(ParserSym.error);}

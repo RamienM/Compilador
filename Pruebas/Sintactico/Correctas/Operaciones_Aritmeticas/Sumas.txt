@@ -1,5 +1,5 @@
 main{
 	int a = 2+2;
-	int b = 10 + a;
-	int c = b + a;
+	int b = 2 + a;
+	int c = a + b;
 }

@@ -38,6 +38,9 @@ public class Compilador {
             System.out.println("El fichero introducido " + ruta + " no existe");
         }catch(IOException e){
             System.out.println("Error al procesar el fichero de entrada");
+        }catch(Exception e){
+            System.err.println("Error: "+e);
+            e.printStackTrace(System.err);
         }
         
     }

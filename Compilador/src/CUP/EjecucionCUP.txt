@@ -1,0 +1,5 @@
+Ordenador Grande:
+java -jar C:\Users\Usuario\Desktop\CarpetayArchivos\UIB\Compiladores\Practica\Compilador\Compilador\lib\CUP\java-cup-11b.jar AnalizadorSintactico.cup
+
+Portatil:
+java -jar C:\Users\Ruben\Desktop\Compilador\Compilador\lib\CUP\java-cup-11b.jar AnalizadorSintactico.cup

@@ -63,13 +63,13 @@ parser code {:
     
     @Override
     public void report_error(String message, Object info){
-        StringBuilder msg = new StringBuilder("ERROR");
+        StringBuilder msg = new StringBuilder("ERROR:");
         if(info instanceof Symbol){
             ComplexSymbol token = (ComplexSymbol) info;
             Location l = token.getLeft();
 
             if(l != null){
-                msg.append(" (fila: )" + l.getLine() + ", columna: " + l.getColumn() + ")");
+                msg.append(" (fila: " + l.getLine() + ", columna: " + l.getColumn() + ")");
             }
         }
         msg.append(": " + message);
@@ -98,19 +98,13 @@ terminal AND, OR, XOR, NOT;
 //Parentesis, llaves y asignacion
 terminal LPARENTESIS, RPARENTESIS, LLLAVE, RLLAVE, ASIGNACION;
 //Puntos y comas
-terminal PUNTOCOMA, COMA;
-//Palabras reservadas PUNTOS no usadas de momento
-// ---PUNTO
+terminal PUNTOCOMA, COMA, PUNTO;
 //Condicionales
 terminal IF, ELSE;
 //Bucles
-terminal WHILE, DO;
-//Palabras reservadas BUCLES no usadas de momento
-//---FOR
+terminal WHILE, DO, FOR;
 //Palabras reservadas
-terminal RETURN, MAIN, INT, BOOL, PROC, FUNT;
-//Palabras reservadas no usadas de momento
-//---BREAK, PRINT, PRINTLN, ENTER, ENTERLN,CONST
+terminal RETURN, MAIN, INT, BOOL, PROC, FUNT, BREAK, PRINT, PRINTLN, ENTER, ENTERLN,CONST;
 
 non terminal Bloque;
 non terminal BloqueP;
@@ -134,7 +128,7 @@ non terminal Do;
 non terminal Returns;
 
 non terminal Asignaciones;
-non terminal AsignacionesP;
+//non terminal AsignacionesP;
 
 non terminal SymbolID ID;
 
@@ -150,6 +144,10 @@ non terminal SymbolMultiplicacionDivision MultiplicacionDivision;
 non terminal SymbolMultiplicacionDivisionP MultiplicacionDivisionP;
 non terminal SymbolFinalOperaciones FinalOperaciones;
 
+
+
+precedence right ASIGNACION; 
+precedence left  SUMA, RESTA, MULTIPLICACION, DIVISION, MODULO;
 
 start with Bloque;
 
@@ -197,31 +195,35 @@ Main ::=
         ;
 
 Instrucciones ::= 
-    Asignaciones  
+    Asignaciones Instrucciones
             {::}
-    | Condicionales 
+    | Condicionales Instrucciones
             {::}
-    | Bucles        
+    | Bucles Instrucciones       
             {::}
-    | Returns       
+    | Returns Instrucciones      
             {::}
     | 
             {::} 
         ;
 
 Asignaciones ::= 
-    Datos IDENTIFICADOR ASIGNACION AsignacionesP PUNTOCOMA  
-            {::}
-    |IDENTIFICADOR ASIGNACION AsignacionesP PUNTOCOMA       
-            {::}
+    Datos IDENTIFICADOR:v1 ASIGNACION OperacionesAritmeticas:v2 PUNTOCOMA  
+            {:
+                addSymbol(v1,(int)v2.value); 
+            :}
+    |IDENTIFICADOR:v1 ASIGNACION OperacionesAritmeticas:v2 PUNTOCOMA       
+            {:
+                addSymbol(v1,(int)v2.value); 
+            :}
         ;
 
-AsignacionesP ::= 
-    ID    
-            {::}
-    | OperacionesAritmeticas    
-            {::}
-        ;
+//AsignacionesP ::= 
+//    OperacionesAritmeticas: v    
+//            {:
+//                RESULT =  new SymbolAsignacionesP((int)v.value);
+//            :}
+//        ;
 
 Condicionales ::= 
     IF LPARENTESIS Expresiones RPARENTESIS LLLAVE Instrucciones RLLAVE Else   
@@ -351,9 +353,13 @@ OperacionesAritmeticasP::=
             {:
                 RESULT = new SymbolOperacionesAritmeticasP(ParserSym.SUMA,(int)v1.value, v2);
             :}
-    | RESTA MultiplicacionDivision:v1 OperacionesAritmeticasP:v2  
+    |RESTA MultiplicacionDivision:v1 OperacionesAritmeticasP:v2  
             {:
                 RESULT = new SymbolOperacionesAritmeticasP(ParserSym.RESTA,(int)v1.value, v2);
+            :}
+    |
+            {:
+                RESULT = new SymbolOperacionesAritmeticasP();
             :}
         ;
 
@@ -377,6 +383,10 @@ MultiplicacionDivisionP ::=
             {:
                 RESULT = new SymbolMultiplicacionDivisionP(ParserSym.MODULO,(int)v1.value, v2);
             :}
+    |
+            {:
+                RESULT = new SymbolMultiplicacionDivisionP();
+            :}
         ;
 
 FinalOperaciones ::=
@@ -387,6 +397,10 @@ FinalOperaciones ::=
     |ID:v
             {:
                 RESULT = new SymbolFinalOperaciones((int)v.value);
+            :}
+    |RESTA OperacionesAritmeticas:v
+            {:
+                RESULT = new SymbolFinalOperaciones(-1 * (int)v.value);
             :}
         ;
     

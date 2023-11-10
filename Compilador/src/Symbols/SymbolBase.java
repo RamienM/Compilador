@@ -24,7 +24,7 @@ public class SymbolBase extends ComplexSymbol{
      * @param valor     Valor de la variable.
      */
     public SymbolBase(String name, int valor) {
-        super(name,identificador++, valor);
+        super(name,identificador++, (Integer)valor);
         this.empty = false;
     }
     
