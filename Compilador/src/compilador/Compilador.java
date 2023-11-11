@@ -27,13 +27,13 @@ public class Compilador {
         System.out.println("Introduzca la ruta del fichero: ");
         Scanner scan = new Scanner(System.in);
         String ruta = scan.nextLine();
-        
         try{
             FileReader in = new FileReader(ruta);
             Lector scanner = new Lector(in);
             SymbolFactory sf = new ComplexSymbolFactory();
             Parser parser = new Parser(scanner, sf);
             parser.parse();
+            parser.printVars(System.out);
         }catch(FileNotFoundException e){
             System.out.println("El fichero introducido " + ruta + " no existe");
         }catch(IOException e){

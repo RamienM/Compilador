@@ -11,15 +11,11 @@ import CUP.ParserSym;
 public class SymbolExpresionesP extends SymbolBase{
     private int operacion;
     
-    public SymbolExpresionesP(boolean valor){
-        super("ExpresionesP",valor);
-    }
-    
     public SymbolExpresionesP(){
-        super();
+        super("ExpresionesP",false);
     }
     
-    public SymbolExpresionesP(int valorExp, int operacion,
+    public SymbolExpresionesP(boolean valorExpresionesC, int operacion,
             SymbolExpresionesP valorExpresionesP){
         super("ExpresionesP",false);
         boolean valor = false;
@@ -27,13 +23,10 @@ public class SymbolExpresionesP extends SymbolBase{
         if((valorExpresionesP == null)||(valorExpresionesP.isEmpty())){
             System.out.println("No se ha recibido ninguna expresion para comparar");
         }else{
-            switch(operacion){
-                case ParserSym.EQUIVALENTE -> valor = valorExp == (int)valorExpresionesP.value;
-                case ParserSym.NOEQUIVALENTE -> valor = valorExp != (int)valorExpresionesP.value;
-                case ParserSym.MAYORIGUAL -> valor = valorExp >= (int)valorExpresionesP.value;
-                case ParserSym.MAYOR -> valor = valorExp > (int)valorExpresionesP.value;
-                case ParserSym.MENORIGUAL -> valor = valorExp <= (int)valorExpresionesP.value;
-                case ParserSym.MENOR -> valor = valorExp < (int)valorExpresionesP.value;
+            switch(valorExpresionesP.getOperacion()){
+                case ParserSym.AND -> valor = valorExpresionesC && (boolean)valorExpresionesP.value;
+                case ParserSym.OR -> valor = valorExpresionesC || (boolean)valorExpresionesP.value;
+                case ParserSym.XOR -> valor = valorExpresionesC ^ (boolean)valorExpresionesP.value;
             }
         }
        this.value = valor;

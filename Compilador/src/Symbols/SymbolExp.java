@@ -9,6 +9,19 @@ package Symbols;
  * @author Ruben
  */
 public class SymbolExp extends SymbolBase{
+    public SymbolExp(SymbolID valor){
+        super("Exp",0);
+        if(valor.value instanceof Integer){
+            this.value = (int)valor.value;
+        }else{
+            this.value = (boolean)valor.value;
+        }
+    }
+    
+    public SymbolExp(boolean valor){
+        super("Exp",valor);
+    }
+    
     public SymbolExp(int valor){
         super("Exp",valor);
     }

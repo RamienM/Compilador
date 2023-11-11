@@ -3,5 +3,5 @@ main{
 	int b = 10 + 2*a;
 	int c = b - 6;
 	int d = 1*1/1 + 1;
-	int e = c/d;
+	int e = c mod d;
 }

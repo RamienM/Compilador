@@ -13,7 +13,7 @@ public class SymbolOperacionesAritmeticas extends SymbolBase{
     public SymbolOperacionesAritmeticas(int valor){
         super("OperacionesAritmeticas", valor);
     }
-      
+    
     public SymbolOperacionesAritmeticas(int valorMultiplicacionDivision, 
             SymbolOperacionesAritmeticasP valorOperacionesAritmeticasP){
         

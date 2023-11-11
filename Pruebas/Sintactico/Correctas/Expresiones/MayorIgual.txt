@@ -1,0 +1,5 @@
+main{
+	boolean a = 4>=4;
+	int b = 3;
+	boolean c = 4>=b;
+}

@@ -10,49 +10,25 @@ import CUP.ParserSym;
  */
 public class SymbolExpresiones extends SymbolBase{
     
-    private int operacion;
-    
-    public SymbolExpresiones(boolean valor){
-        super("Expresiones",valor);
-    }
-    
     public SymbolExpresiones(){
         super();
     }
     
-    public SymbolExpresiones(boolean valorExpresionesP, int operacion,
-            SymbolExpresiones valorExpresiones){
+    public SymbolExpresiones(boolean valorExpresionesC,
+            SymbolExpresionesP valorExpresionesP){
         super("Expresiones",false);
         boolean valor = false;
         
-        if((valorExpresiones == null)||(valorExpresiones.isEmpty())){
-            valor = valorExpresionesP;
+        if((valorExpresionesP == null)||(valorExpresionesP.isEmpty())){
+            valor = valorExpresionesC;
         }else{
-            switch(operacion){
-                case ParserSym.AND -> valor = valorExpresionesP && (boolean)valorExpresiones.value;
-                case ParserSym.OR -> valor = valorExpresionesP || (boolean)valorExpresiones.value;
-                case ParserSym.XOR -> valor = valorExpresionesP && (boolean)valorExpresiones.value;
+            switch(valorExpresionesP.getOperacion()){
+                case ParserSym.AND -> valor = valorExpresionesC && (boolean)valorExpresionesP.value;
+                case ParserSym.OR -> valor = valorExpresionesC || (boolean)valorExpresionesP.value;
+                case ParserSym.XOR -> valor = valorExpresionesC ^ (boolean)valorExpresionesP.value;
             }
         }
        this.value = valor;
-       this.operacion = operacion;
     }
     
-    public SymbolExpresiones(int operacion,
-            SymbolExp valorExp){
-        super("Expresiones",false);
-        boolean valor = false;
-        
-        if((valorExp == null)||(valorExp.isEmpty())){
-            System.out.println("No se ha recibido ninguna expresion");
-        }else{
-            valor = !(boolean)valorExp.value;
-        }
-       this.value = valor;
-       this.operacion = operacion;
-    }
-    
-    public int getOperacion(){
-        return operacion;
-    }
 }

@@ -37,9 +37,8 @@ public class SymbolBase extends ComplexSymbol{
         super(name,identificador++, valor);
         this.empty = false;
     }
-    
     /**
-     * Constructor que crea un instacia vacia, nor servirá para los errores o
+     * Constructor que crea un instacia vacia, nos servirá para los errores o
      * para las proyecciones que derivan a lambda.
      */
     public SymbolBase(){

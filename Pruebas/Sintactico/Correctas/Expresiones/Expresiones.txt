@@ -1,0 +1,6 @@
+main{
+	boolean a = true and false;
+	boolean b = true or b;
+	boolean c = a xor b;
+	boolean d = not c;
+}
