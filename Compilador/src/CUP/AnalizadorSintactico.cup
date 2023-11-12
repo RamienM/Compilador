@@ -128,7 +128,7 @@ terminal IF, ELSE;
 //Bucles
 terminal WHILE, DO, FOR;
 //Palabras reservadas
-terminal RETURN, MAIN, INT, BOOL, PROC, FUNT, BREAK, PRINT, PRINTLN, ENTER, ENTERLN,CONST;
+terminal RETURN, MAIN, INT, BOOL, PROC, FUNT, BREAK, PRINT, PRINTLN, ENTER, ENTERLN, CONST, TRUE, FALSE;
 
 non terminal Bloque;
 non terminal BloqueP;
@@ -149,10 +149,13 @@ non terminal Condicionales;
 non terminal Bucles;
 non terminal While;
 non terminal Do;
+non terminal For;
 non terminal Returns;
+non terminal Prints;
+non terminal Enters;
 
 non terminal Asignaciones;
-//non terminal AsignacionesP;
+non terminal Constantes;
 
 non terminal SymbolID ID;
 
@@ -163,12 +166,14 @@ non terminal SymbolExpresionesP ExpresionesP;
 non terminal SymbolExpresionesC ExpresionesC;
 non terminal SymbolExpresionesCP ExpresionesCP;
 non terminal SymbolExp Exp;
+non terminal Aritmetica;
 
 non terminal SymbolOperacionesAritmeticas OperacionesAritmeticas;
 non terminal SymbolOperacionesAritmeticasP OperacionesAritmeticasP;
 non terminal SymbolMultiplicacionDivision MultiplicacionDivision;
 non terminal SymbolMultiplicacionDivisionP MultiplicacionDivisionP;
 non terminal SymbolFinalOperaciones FinalOperaciones;
+non terminal Incremento;
 
 
 
@@ -230,23 +235,45 @@ Instrucciones ::=
             {::}
     | Returns Instrucciones      
             {::}
-    | 
-            {::} 
+    | BREAK Instrucciones
+            {::}
+    | Prints Instrucciones
+            {::}  
+    |
+            {::}
         ;
 
 Asignaciones ::= 
     INT IDENTIFICADOR:v1 ASIGNACION OperacionesAritmeticas:v2 PUNTOCOMA  
             {:
-                addSymbol(v1,(int)v2.value); 
+                if((!estaBoolean(v1))&&(!estaInteger(v1))){
+                        addSymbol(v1,(int)v2.value); 
+                        RESULT = new SymbolAsignaciones((int)v2.value);
+                    }else{
+                        System.out.println("El identificador "+v1+" ya se ha definido con anterioridad");
+                }
             :}
     |BOOL IDENTIFICADOR:v1 ASIGNACION Expresiones:v2 PUNTOCOMA  
             {:
-                addSymbol(v1,(boolean)v2.value); 
+                if((!estaBoolean(v1))&&(!estaInteger(v1))){
+                        addSymbol(v1,(boolean)v2.value); 
+                        RESULT = new SymbolAsignaciones((boolean)v2.value);
+                    }else{
+                        System.out.println("El identificador "+v1+" ya se ha definido con anterioridad");
+                }  
             :}
     //|IDENTIFICADOR:v1 ASIGNACION AsignacionesP:v2 PUNTOCOMA       
     //        {:
     //            addSymbol(v1,(int)v2.value); 
     //        :}
+        ;
+
+
+Constantes::=
+    CONST
+            {::}
+    |
+            {::}
         ;
 
 Condicionales ::= 
@@ -266,6 +293,8 @@ Bucles ::=
             {::}
     |Do    
             {::}
+    |For
+            {::}
         ;
 
 While ::= 
@@ -278,10 +307,32 @@ Do ::=
             {::}
         ;
 
+For::=
+    FOR LPARENTESIS Asignaciones PUNTOCOMA Expresiones PUNTOCOMA Incremento RPARENTESIS LLLAVE Instrucciones RLLAVE 
+            {::}
+        ;
+
 Returns ::= 
     RETURN ID:v PUNTOCOMA 
             {:
                 //RESULT = new SymbolReturns(v.value);
+            :}
+        ;
+
+Prints::=
+    PRINT
+            {:
+            :}
+    |PRINTLN
+            {:
+            :}
+        ;
+Enters::=
+    ENTER
+            {:
+            :}
+    |ENTERLN
+            {:
             :}
         ;
 
@@ -317,7 +368,7 @@ Expresiones ::=
 ExpresionesP ::=
     AND ExpresionesC:v1 ExpresionesP:v2   
             {:
-                RESULT = new SymbolExpresionesP((boolean)v1.value, ParserSym.OR,v2);
+                RESULT = new SymbolExpresionesP((boolean)v1.value, ParserSym.AND,v2);
             :}
     |OR ExpresionesC:v1 ExpresionesP:v2  
             {:
@@ -456,15 +507,28 @@ Exp ::=
             :}
     |ID:v                                     
             {:
-                RESULT = new SymbolExp(v);
+                if(v.value instanceof Integer){
+                    RESULT = new SymbolExp((int)v.value);
+                }else{
+                    RESULT = new SymbolExp((boolean)v.value);
+                }
             :}
     |NOT Exp:v                
             {:
                 if(v.value instanceof Boolean){
-                    RESULT = new SymbolExp((boolean)v.value);
+                    RESULT = new SymbolExp(!(boolean)v.value);
                 }else{
                     System.out.println("Se está pasando por parametro un entero cuando debería ser booleano");
+                    RESULT = new SymbolExp(!);
                 }
+            :}
+    |TRUE
+            {:
+                RESULT = new SymbolExp(true);
+            :}
+    |FALSE
+            {:
+                RESULT = new SymbolExp(false);
             :}
         ;
 

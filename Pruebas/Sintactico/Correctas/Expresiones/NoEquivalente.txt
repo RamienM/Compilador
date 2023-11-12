@@ -1,5 +1,5 @@
 main{
 	boolean a = 4!=5;
 	int b = 3;
-	boolean c = 4==b;
+	boolean c = 4!=b;
 }

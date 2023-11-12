@@ -13,6 +13,9 @@ public class SymbolFinalOperaciones extends SymbolBase{
     public SymbolFinalOperaciones(int valor) {
         super("FinalOperaciones", valor);
     }
+    public SymbolFinalOperaciones(boolean valor) {
+        super("FinalOperaciones", valor);
+    }
     
     public SymbolFinalOperaciones() {
         super();

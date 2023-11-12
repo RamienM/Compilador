@@ -33,6 +33,14 @@ public class SymbolMultiplicacionDivision extends SymbolBase{
                         valor = valorFinalOperaciones / division;
                     }
                 }
+                case ParserSym.MODULO -> {
+                    int modulo = (int)valorMultiplicacionDivisionP.value;
+                    if(modulo == 0){
+                        System.out.println("Error");
+                    }else{
+                        valor = valorFinalOperaciones % modulo;
+                    }
+                }
             }
         }
         this.value = valor;

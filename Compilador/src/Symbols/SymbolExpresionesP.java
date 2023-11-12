@@ -21,7 +21,7 @@ public class SymbolExpresionesP extends SymbolBase{
         boolean valor = false;
         
         if((valorExpresionesP == null)||(valorExpresionesP.isEmpty())){
-            System.out.println("No se ha recibido ninguna expresion para comparar");
+            valor = valorExpresionesC;
         }else{
             switch(valorExpresionesP.getOperacion()){
                 case ParserSym.AND -> valor = valorExpresionesC && (boolean)valorExpresionesP.value;

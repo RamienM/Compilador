@@ -84,7 +84,7 @@ op_menor = \<
 //--Lógicos
 op_and = and
 op_or =  or
-op_xor = xr
+op_xor = xor
 op_not = not
 
 
@@ -144,8 +144,8 @@ blockcomment = \/\*({character}|{digit}|{space})*\*\/
 
         //tipo de datos
         {integer}                      { return symbol(ParserSym.valor, Integer.parseInt(this.yytext())); }
-        {booleanTrue}                  { return symbol(ParserSym.valor, Boolean.parseBoolean(this.yytext())); }
-        {booleanFalse}                 { return symbol(ParserSym.valor, Boolean.parseBoolean(this.yytext())); }
+        {booleanTrue}                  { return symbol(ParserSym.TRUE); }
+        {booleanFalse}                 { return symbol(ParserSym.FALSE); }
 
         //Operadores
         //--Aritmeticos

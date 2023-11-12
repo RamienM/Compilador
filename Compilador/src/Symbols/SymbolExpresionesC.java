@@ -24,7 +24,11 @@ public class SymbolExpresionesC extends SymbolBase{
         boolean valor = false;
         
         if((valorExpresionesCP == null)||(valorExpresionesCP.isEmpty())){
-            System.out.println("No se ha recido ningún valor para comparar");
+            if(valorExp.value instanceof Boolean){
+                valor = (boolean)valorExp.value;
+            }else{
+                System.out.println("No se ha recido ningún valor para comparar");
+            }
         }else{
             if ((valorExp.value instanceof Boolean) && (valorExpresionesCP.value instanceof Boolean)){
                 switch(valorExpresionesCP.getOperacion()){
