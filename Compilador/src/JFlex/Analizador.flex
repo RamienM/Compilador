@@ -60,7 +60,7 @@ booleanTrue = true
 booleanFalse = false
 
 //constantes
-const_final = const
+//const_final = const
 
 //asignacion
 asignacion = \=
@@ -208,7 +208,7 @@ blockcomment = \/\*({character}|{digit}|{space})*\*\/
         {int}                          { return symbol(ParserSym.INT); }
         {bool}                         { return symbol(ParserSym.BOOL); }
         //--constantes
-        {const_final}                  { return symbol(ParserSym.CONST);}
+        //{const_final}                  { return symbol(ParserSym.CONST);}
 
         //Comentarios
         {linecomment}                  {/*Ignore*/}

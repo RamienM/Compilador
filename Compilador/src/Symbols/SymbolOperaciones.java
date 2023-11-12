@@ -8,16 +8,16 @@ package Symbols;
  *
  * @author Ruben
  */
-public class SymbolFinalOperaciones extends SymbolBase{
-    
-    public SymbolFinalOperaciones(int valor) {
-        super("FinalOperaciones", valor);
-    }
-    public SymbolFinalOperaciones(boolean valor) {
-        super("FinalOperaciones", valor);
+public class SymbolOperaciones extends SymbolBase{
+    public SymbolOperaciones(boolean valor){
+        super("Operaciones",valor);
     }
     
-    public SymbolFinalOperaciones() {
+    public SymbolOperaciones(int valor){
+        super("Operaciones",valor);
+    }
+    
+    public SymbolOperaciones(){
         super();
     }
 }

@@ -9,7 +9,6 @@ package CUP;
 public class ParserSym {
   /* terminals */
   public static final int ENTER = 41;
-  public static final int CONST = 43;
   public static final int XOR = 17;
   public static final int RESTA = 5;
   public static final int INT = 34;
@@ -32,7 +31,7 @@ public class ParserSym {
   public static final int MAYORIGUAL = 11;
   public static final int EOF = 0;
   public static final int RETURN = 32;
-  public static final int TRUE = 44;
+  public static final int TRUE = 43;
   public static final int error = 1;
   public static final int COMA = 25;
   public static final int FUNT = 37;
@@ -47,7 +46,7 @@ public class ParserSym {
   public static final int PUNTO = 26;
   public static final int WHILE = 29;
   public static final int PROC = 36;
-  public static final int FALSE = 45;
+  public static final int FALSE = 44;
   public static final int DIVISION = 7;
   public static final int PRINT = 39;
   public static final int EQUIVALENTE = 9;
@@ -98,7 +97,6 @@ public class ParserSym {
   "PRINTLN",
   "ENTER",
   "ENTERLN",
-  "CONST",
   "TRUE",
   "FALSE"
   };

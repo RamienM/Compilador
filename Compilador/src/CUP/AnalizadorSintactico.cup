@@ -128,7 +128,7 @@ terminal IF, ELSE;
 //Bucles
 terminal WHILE, DO, FOR;
 //Palabras reservadas
-terminal RETURN, MAIN, INT, BOOL, PROC, FUNT, BREAK, PRINT, PRINTLN, ENTER, ENTERLN, CONST, TRUE, FALSE;
+terminal RETURN, MAIN, INT, BOOL, PROC, FUNT, BREAK, PRINT, PRINTLN, ENTER, ENTERLN, TRUE, FALSE;
 
 non terminal Bloque;
 non terminal BloqueP;
@@ -142,7 +142,7 @@ non terminal AtributosP;
 
 non terminal Instrucciones;
 
-non terminal Datos;
+non terminal SymbolDatos Datos;
 
 
 non terminal Condicionales;
@@ -155,24 +155,16 @@ non terminal Prints;
 non terminal Enters;
 
 non terminal Asignaciones;
-non terminal Constantes;
 
 non terminal SymbolID ID;
 
 non terminal Else;
 
+non terminal SymbolOperaciones Operaciones;
+
 non terminal SymbolExpresiones Expresiones;
-non terminal SymbolExpresionesP ExpresionesP;
-non terminal SymbolExpresionesC ExpresionesC;
-non terminal SymbolExpresionesCP ExpresionesCP;
-non terminal SymbolExp Exp;
-non terminal Aritmetica;
 
 non terminal SymbolOperacionesAritmeticas OperacionesAritmeticas;
-non terminal SymbolOperacionesAritmeticasP OperacionesAritmeticasP;
-non terminal SymbolMultiplicacionDivision MultiplicacionDivision;
-non terminal SymbolMultiplicacionDivisionP MultiplicacionDivisionP;
-non terminal SymbolFinalOperaciones FinalOperaciones;
 non terminal Incremento;
 
 
@@ -244,36 +236,89 @@ Instrucciones ::=
         ;
 
 Asignaciones ::= 
-    INT IDENTIFICADOR:v1 ASIGNACION OperacionesAritmeticas:v2 PUNTOCOMA  
+    Datos:v IDENTIFICADOR:v1 ASIGNACION Operaciones:v2 PUNTOCOMA  
             {:
-                if((!estaBoolean(v1))&&(!estaInteger(v1))){
-                        addSymbol(v1,(int)v2.value); 
-                        RESULT = new SymbolAsignaciones((int)v2.value);
-                    }else{
-                        System.out.println("El identificador "+v1+" ya se ha definido con anterioridad");
+                switch((int)v.value){
+                    case ParserSym.INT ->{
+                        if (v2.value instanceof Integer){
+                            if((!estaBoolean(v1))&&(!estaInteger(v1))){
+                                addSymbol(v1,(int)v2.value); 
+                                RESULT = new SymbolAsignaciones((int)v2.value);
+                            }else{
+                                System.out.println("El identificador "+v1+" ya se ha definido con anterioridad");
+                            }
+                        }else{
+                            System.out.println("Se está añadiendo un booleano a un entero");
+                        }
+                    }
+                    case ParserSym.BOOL ->{
+                        if (v2.value instanceof Boolean){
+                            if((!estaBoolean(v1))&&(!estaInteger(v1))){
+                                addSymbol(v1,(boolean)v2.value); 
+                                RESULT = new SymbolAsignaciones((boolean)v2.value);
+                            }else{
+                                System.out.println("El identificador "+v1+" ya se ha definido con anterioridad");
+                            }
+                        }else{
+                            System.out.println("Se está añadiendo un entero a un booleano");
+                        }
+                    }
                 }
             :}
-    |BOOL IDENTIFICADOR:v1 ASIGNACION Expresiones:v2 PUNTOCOMA  
-            {:
-                if((!estaBoolean(v1))&&(!estaInteger(v1))){
-                        addSymbol(v1,(boolean)v2.value); 
-                        RESULT = new SymbolAsignaciones((boolean)v2.value);
-                    }else{
-                        System.out.println("El identificador "+v1+" ya se ha definido con anterioridad");
-                }  
+    |IDENTIFICADOR:v1 ASIGNACION Operaciones:v2 PUNTOCOMA       
+            {: 
+                if (v2.value instanceof Integer){
+                    if((!estaBoolean(v1))&&(estaInteger(v1))){
+                        addSymbol(v1,(int)v2.value); 
+                        RESULT = new SymbolAsignaciones((int)v2.value);
+                     }else if(estaBoolean(v1)){
+                        System.out.println("El identificador "+v1+" es un boolano, estas añadiendo un entero");
+                     }else{
+                        System.out.println("El identificador "+v1+" no se ha definido con anteriodidad");
+                     }
+                }else{
+                    if((estaBoolean(v1))&&(!estaInteger(v1))){
+                        addSymbol(v1,(int)v2.value); 
+                        RESULT = new SymbolAsignaciones((int)v2.value);
+                     }else if(estaInteger(v1)){
+                        System.out.println("El identificador "+v1+" es un entero, estas añadiendo un booleano");
+                     }else{
+                        System.out.println("El identificador "+v1+" no se ha definido con anteriodidad");
+                     }
+                }
             :}
-    //|IDENTIFICADOR:v1 ASIGNACION AsignacionesP:v2 PUNTOCOMA       
-    //        {:
-    //            addSymbol(v1,(int)v2.value); 
-    //        :}
         ;
 
 
-Constantes::=
-    CONST
-            {::}
-    |
-            {::}
+Datos ::= 
+    INT 
+            {:
+                RESULT = new SymbolDatos(ParserSym.INT);
+            :}
+    | BOOL 
+            {:
+                RESULT = new SymbolDatos(ParserSym.BOOL);
+            :}
+        ;
+
+Operaciones::=
+    OperacionesAritmeticas:v
+            {:
+                RESULT = new SymbolOperaciones((int)v.value);
+            :}
+    |Expresiones:v
+            {:
+                RESULT = new SymbolOperaciones((boolean)v.value);
+            :}
+    |ID:v
+            {:
+                if(v.value instanceof Boolean){
+                    RESULT = new SymbolOperaciones((boolean)v.value);
+                }else{
+                    RESULT = new SymbolOperaciones((int)v.value);
+                } 
+            :}
+
         ;
 
 Condicionales ::= 
@@ -336,13 +381,6 @@ Enters::=
             :}
         ;
 
-Datos ::= 
-    INT 
-            {::}
-    | BOOL 
-            {::}
-        ;
-
 ID ::= 
     IDENTIFICADOR:v 
             {:
@@ -360,194 +398,86 @@ ID ::=
             :}
         ;
 Expresiones ::= 
-    ExpresionesC:v1 ExpresionesP:v2
+    Operaciones:v1 AND Operaciones:v2      
             {:
-                RESULT = new SymbolExpresiones((boolean)v1.value,v2);
+                RESULT = new SymbolExpresiones(v1, ParserSym.AND,v2);
             :}
-        ;
-ExpresionesP ::=
-    AND ExpresionesC:v1 ExpresionesP:v2   
+    |Operaciones:v1 OR Operaciones:v2      
             {:
-                RESULT = new SymbolExpresionesP((boolean)v1.value, ParserSym.AND,v2);
+                RESULT = new SymbolExpresiones(v1, ParserSym.OR,v2);
             :}
-    |OR ExpresionesC:v1 ExpresionesP:v2  
+    |Operaciones:v1 XOR Operaciones:v2     
             {:
-                RESULT = new SymbolExpresionesP((boolean)v1.value, ParserSym.OR,v2);
+                RESULT = new SymbolExpresiones(v1, ParserSym.XOR,v2);
             :}
-    |XOR ExpresionesC:v1 ExpresionesP:v2   
+    |Operaciones:v1 EQUIVALENTE Operaciones:v2   
             {:
-                RESULT = new SymbolExpresionesP((boolean)v1.value, ParserSym.XOR,v2);
+                RESULT = new SymbolExpresiones(v1, ParserSym.EQUIVALENTE,v2);      
             :}
-    |
+    |Operaciones:v1 NOEQUIVALENTE Operaciones:v2  
             {:
-                RESULT = new SymbolExpresionesP();
+                RESULT = new SymbolExpresiones(v1, ParserSym.NOEQUIVALENTE,v2); 
             :}
-        ;
-
-ExpresionesC ::= 
-    Exp:v1 ExpresionesCP:v2
+    |Operaciones:v1 MAYORIGUAL Operaciones:v2    
             {:
-                RESULT = new SymbolExpresionesC(v1,v2);
+                RESULT = new SymbolExpresiones(v1, ParserSym.MAYORIGUAL,v2);
             :}
-        ;
-
-ExpresionesCP ::=
-    EQUIVALENTE Exp:v    
+    |Operaciones:v1 MAYOR Operaciones:v2        
+            {:
+                RESULT = new SymbolExpresiones(v1, ParserSym.MAYOR,v2);
+            :}
+    |Operaciones:v1 MENORIGUAL Operaciones:v2   
+            {:
+                RESULT = new SymbolExpresiones(v1, ParserSym.MENORIGUAL,v2);
+            :}
+    |Operaciones:v1 MENOR Operaciones:v2      
+            {:
+                RESULT = new SymbolExpresiones(v1, ParserSym.MENOR,v2); 
+            :}
+    |NOT Operaciones:v                
             {:
                 if(v.value instanceof Boolean){
-                    RESULT = new SymbolExpresionesCP((boolean)v.value, ParserSym.EQUIVALENTE);
+                    RESULT = new SymbolExpresiones(!(boolean)v.value);
                 }else{
-                    RESULT = new SymbolExpresionesCP((int)v.value, ParserSym.EQUIVALENTE);
-                }      
+                    System.out.println("Se está pasando por parametro un entero cuando debería ser booleano");
+                    RESULT = new SymbolExpresiones();
+                }
             :}
-    |NOEQUIVALENTE Exp:v  
+    |TRUE
             {:
-                if(v.value instanceof Boolean){
-                    RESULT = new SymbolExpresionesCP((boolean)v.value, ParserSym.NOEQUIVALENTE);
-                }else{
-                    RESULT = new SymbolExpresionesCP((int)v.value, ParserSym.NOEQUIVALENTE);
-                }   
+                RESULT = new SymbolExpresiones(true);
             :}
-    |MAYORIGUAL Exp:v    
+    |FALSE
             {:
-                if(v.value instanceof Boolean){
-                    System.out.println("Se está intentando pasar un valor booleano cuando se requiere un entero");
-                    RESULT = new SymbolExpresionesCP();
-                }else{
-                    RESULT = new SymbolExpresionesCP((int)v.value, ParserSym.MAYORIGUAL);
-                }   
-            :}
-    |MAYOR Exp:v        
-            {:
-                if(v.value instanceof Boolean){
-                    System.out.println("Se está intentando pasar un valor booleano cuando se requiere un entero");
-                    RESULT = new SymbolExpresionesCP();
-                }else{
-                    RESULT = new SymbolExpresionesCP((int)v.value, ParserSym.MAYOR);
-                } 
-            :}
-    |MENORIGUAL Exp:v    
-            {:
-                if(v.value instanceof Boolean){
-                    System.out.println("Se está intentando pasar un valor booleano cuando se requiere un entero");
-                    RESULT = new SymbolExpresionesCP();
-                }else{
-                    RESULT = new SymbolExpresionesCP((int)v.value, ParserSym.MENORIGUAL);
-                } 
-            :}
-    |MENOR Exp:v      
-            {:
-                if(v.value instanceof Boolean){
-                    System.out.println("Se está intentando pasar un valor booleano cuando se requiere un entero");
-                    RESULT = new SymbolExpresionesCP();
-                }else{
-                    RESULT = new SymbolExpresionesCP((int)v.value, ParserSym.MENOR);
-                } 
-            :}
-    |
-            {:
-                RESULT = new SymbolExpresionesCP();
+                RESULT = new SymbolExpresiones(false);
             :}
         ;
 
 
 OperacionesAritmeticas::= 
-    MultiplicacionDivision:v1 OperacionesAritmeticasP:v2    
+    Operaciones:v1 SUMA Operaciones:v2  
             {:
-                RESULT = new SymbolOperacionesAritmeticas((int)v1.value, v2);
+                RESULT = new SymbolOperacionesAritmeticas((int)v1.value,ParserSym.SUMA, v2);
             :}
-        ;
-
-OperacionesAritmeticasP::= 
-    SUMA MultiplicacionDivision:v1 OperacionesAritmeticasP:v2      
+    |Operaciones:v1 RESTA Operaciones:v2  
             {:
-                RESULT = new SymbolOperacionesAritmeticasP(ParserSym.SUMA,(int)v1.value, v2);
+                RESULT = new SymbolOperacionesAritmeticas((int)v1.value,ParserSym.RESTA, v2);
             :}
-    |RESTA MultiplicacionDivision:v1 OperacionesAritmeticasP:v2  
+    |Operaciones:v1 MULTIPLICACION Operaciones:v2
             {:
-                RESULT = new SymbolOperacionesAritmeticasP(ParserSym.RESTA,(int)v1.value, v2);
+                RESULT = new SymbolOperacionesAritmeticas((int)v1.value,ParserSym.MULTIPLICACION, v2);
             :}
-    |
+    |Operaciones:v1 DIVISION Operaciones:v2
             {:
-                RESULT = new SymbolOperacionesAritmeticasP();
+                RESULT = new SymbolOperacionesAritmeticas((int)v1.value,ParserSym.DIVISION, v2);
             :}
-        ;
-
-MultiplicacionDivision::= 
-    FinalOperaciones:v1 MultiplicacionDivisionP:v2  
+    |Operaciones:v1 MODULO Operaciones:v2
             {:
-                RESULT = new SymbolMultiplicacionDivision((int)v1.value, v2);
+                RESULT = new SymbolOperacionesAritmeticas((int)v1.value,ParserSym.MODULO, v2);
             :}
-        ;
-
-MultiplicacionDivisionP ::= 
-    MULTIPLICACION FinalOperaciones:v1 MultiplicacionDivisionP:v2 
+    |RESTA Operaciones:v
             {:
-                RESULT = new SymbolMultiplicacionDivisionP(ParserSym.MULTIPLICACION,(int)v1.value, v2);
-            :}
-    |DIVISION FinalOperaciones:v1 MultiplicacionDivisionP:v2      
-            {:
-                RESULT = new SymbolMultiplicacionDivisionP(ParserSym.DIVISION,(int)v1.value, v2);
-            :}
-    |MODULO FinalOperaciones:v1 MultiplicacionDivisionP:v2        
-            {:
-                RESULT = new SymbolMultiplicacionDivisionP(ParserSym.MODULO,(int)v1.value, v2);
-            :}
-    |
-            {:
-                RESULT = new SymbolMultiplicacionDivisionP();
-            :}
-        ;
-
-
-Exp ::= 
-    LPARENTESIS Expresiones:v RPARENTESIS      
-            {:
-                RESULT = new SymbolExp((boolean)v.value);
-            :}
-    |ID:v                                     
-            {:
-                if(v.value instanceof Integer){
-                    RESULT = new SymbolExp((int)v.value);
-                }else{
-                    RESULT = new SymbolExp((boolean)v.value);
-                }
-            :}
-    |NOT Exp:v                
-            {:
-                if(v.value instanceof Boolean){
-                    RESULT = new SymbolExp(!(boolean)v.value);
-                }else{
-                    System.out.println("Se está pasando por parametro un entero cuando debería ser booleano");
-                    RESULT = new SymbolExp(!);
-                }
-            :}
-    |TRUE
-            {:
-                RESULT = new SymbolExp(true);
-            :}
-    |FALSE
-            {:
-                RESULT = new SymbolExp(false);
-            :}
-        ;
-
-FinalOperaciones ::=
-    LPARENTESIS OperacionesAritmeticas:v RPARENTESIS 
-            {:
-                RESULT = new SymbolFinalOperaciones((int)v.value);
-            :}
-    |ID:v
-            {:
-                if(v.value instanceof Integer){
-                    RESULT = new SymbolFinalOperaciones((int)v.value);
-                }else{
-                    System.out.println("Se está pasando por parametro un Booleano cuando debería ser Integer");
-                }
-            :}
-    |RESTA OperacionesAritmeticas:v
-            {:
-                RESULT = new SymbolFinalOperaciones(-1 * (int)v.value);
+                RESULT = new SymbolOperacionesAritmeticas(-1 * (int)v.value);
             :}
         ;
     

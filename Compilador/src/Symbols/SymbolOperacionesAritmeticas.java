@@ -14,18 +14,35 @@ public class SymbolOperacionesAritmeticas extends SymbolBase{
         super("OperacionesAritmeticas", valor);
     }
     
-    public SymbolOperacionesAritmeticas(int valorMultiplicacionDivision, 
-            SymbolOperacionesAritmeticasP valorOperacionesAritmeticasP){
+    public SymbolOperacionesAritmeticas(int valorOperacion,int operacion, 
+            SymbolOperaciones valorOperacionP){
         
         super("OperacionesAritmeticas", 0);
         int valor = 0;
         
-        if ((valorOperacionesAritmeticasP == null)|| (valorOperacionesAritmeticasP.isEmpty())){
-            valor = valorMultiplicacionDivision;
+        if ((valorOperacionP == null)|| (valorOperacionP.isEmpty())){
+            valor = valorOperacion;
         }else{
-            switch(valorOperacionesAritmeticasP.getOperacion()){
-                case ParserSym.SUMA -> valor = valorMultiplicacionDivision + (int)valorOperacionesAritmeticasP.value;
-                case ParserSym.RESTA -> valor = valorMultiplicacionDivision - (int)valorOperacionesAritmeticasP.value;
+            switch(operacion){
+                case ParserSym.SUMA -> valor = valorOperacion + (int)valorOperacionP.value;
+                case ParserSym.RESTA -> valor = valorOperacion - (int)valorOperacionP.value;
+                case ParserSym.MULTIPLICACION -> valor = valorOperacion * (int)valorOperacionP.value;
+                case ParserSym.DIVISION -> {
+                    int division = (int)valorOperacionP.value;
+                    if(division == 0){
+                        System.out.println("Error");
+                    }else{
+                        valor = valorOperacion / division;
+                    }
+                }
+                case ParserSym.MODULO -> {
+                    int modulo = (int)valorOperacionP.value;
+                    if(modulo == 0){
+                        System.out.println("Error");
+                    }else{
+                        valor = valorOperacion % modulo;
+                    }
+                }
             }
         }
         this.value = valor;
