@@ -12,7 +12,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java_cup.runtime.ComplexSymbolFactory;
 import java_cup.runtime.SymbolFactory;
-
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  *
@@ -24,25 +25,32 @@ public class Compilador {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        System.out.println("Introduzca la ruta del fichero: ");
-        Scanner scan = new Scanner(System.in);
-        String ruta = scan.nextLine();
-        try{
-            FileReader in = new FileReader(ruta);
-            Lector scanner = new Lector(in);
-            SymbolFactory sf = new ComplexSymbolFactory();
-            Parser parser = new Parser(scanner, sf);
-            parser.parse();
-            parser.printVars(System.out);
-        }catch(FileNotFoundException e){
-            System.out.println("El fichero introducido " + ruta + " no existe");
-        }catch(IOException e){
-            System.out.println("Error al procesar el fichero de entrada");
-        }catch(Exception e){
-            System.err.println("Error: "+e);
-            e.printStackTrace(System.err);
+        JFileChooser fichero = new JFileChooser("./Pruebas");
+        FileNameExtensionFilter filtro = new FileNameExtensionFilter("Archivos de texto (*.txt)", "txt");
+        fichero.setFileFilter(filtro);
+        int resultado = fichero.showOpenDialog(null);
+        if (resultado == JFileChooser.APPROVE_OPTION) {
+            // Obtiene el archivo seleccionado
+            try {
+                FileReader in = new FileReader(fichero.getSelectedFile());
+                Lector scanner = new Lector(in);
+                SymbolFactory sf = new ComplexSymbolFactory();
+                Parser parser = new Parser(scanner, sf);
+                parser.parse();
+                parser.printVars();
+                in.close();
+            } catch (FileNotFoundException e) {
+                System.out.println("El fichero introducido no existe");
+            } catch (IOException e) {
+                System.out.println("Error al procesar el fichero de entrada");
+            } catch (Exception e) {
+                System.err.println("Error: " + e);
+                e.printStackTrace(System.err);
+            }
+        } else {
+            System.out.println("Operación cancelada por el usuario");
         }
-        
+
     }
-    
+
 }

@@ -8,59 +8,14 @@ import java_cup.runtime.*;
 import Symbols.*;
 import CUP.*;
 
-import java.io.PrintStream;
-import java.util.HashMap;
-
 class Parser;
 
 parser code {:
-    private HashMap<String, Integer>tsymbolsI = new HashMap<>();
-    private HashMap<String, Boolean>tsymbolsB = new HashMap<>();
+    private TablaDeSimbolos ts = new TablaDeSimbolos();
 
-    public int getSymbolValueInteger(String id){
-        return (int)tsymbolsI.get(id);
+    public void printVars(){
+        ts.printVars(System.out);
     }
-    public boolean getSymbolValueBoolean(String id){
-        return (boolean)tsymbolsB.get(id);
-    }
-    
-    public boolean estaInteger(String id){
-        return tsymbolsI.containsKey(id);
-    }
-    public boolean estaBoolean(String id){
-        return tsymbolsB.containsKey(id);
-    }
-
-    public void addSymbol(String id, int value){
-        if(tsymbolsI.get(id) == null){
-            tsymbolsI.put(id,value);
-        } else{
-            tsymbolsI.replace(id,value);
-        }
-    }
-    public void addSymbol(String id, boolean value){
-        if(tsymbolsB.get(id) == null){
-            tsymbolsB.put(id,value);
-        } else{
-            tsymbolsB.replace(id,value);
-        }
-    }
-    
-    public void printVars(PrintStream out) {
-        if (tsymbolsI.size() == 0) {
-            out.println("No hi ha variables enteras declarades");
-        } else {
-            String fmt = "%-8s: %d";
-            tsymbolsI.forEach((k,v) -> out.println(String.format(fmt,k,v)));
-        }
-        if (tsymbolsB.size() == 0) {
-            out.println("No hi ha variables booleanas declarades");
-        } else {
-            String fmt = "%-8s: %b";
-            tsymbolsB.forEach((k,v) -> out.println(String.format(fmt,k,v)));
-        }
-    }
-
     /**
     * Nos permite saber si se ha detectado un error:
     *   -true: Se ha detectado error
@@ -73,6 +28,10 @@ parser code {:
     /*
         -------------------GESTION DE ERRORES---------------------------
     */
+
+    public void errorEncontrado(){
+        errorSemantic= true;
+    }
 
     @Override
     public void unrecovered_syntax_error(Symbol cur_token) throws Exception{
@@ -146,6 +105,7 @@ non terminal SymbolDatos Datos;
 
 
 non terminal Condicionales;
+non terminal ExpresionesCondicional;
 non terminal Bucles;
 non terminal While;
 non terminal Do;
@@ -170,7 +130,8 @@ non terminal Incremento;
 
 
 precedence right ASIGNACION; 
-precedence left  SUMA, RESTA, MULTIPLICACION, DIVISION, MODULO;
+precedence left  SUMA, RESTA;
+precedence right MULTIPLICACION, DIVISION, MODULO;
 precedence left  EQUIVALENTE, NOEQUIVALENTE, MAYORIGUAL, MAYOR, MENORIGUAL, MENOR, AND, OR, XOR, NOT;
 
 start with Bloque;
@@ -220,17 +181,21 @@ Main ::=
 
 Instrucciones ::= 
     Asignaciones Instrucciones
-            {::}
+            {:
+            :}
     | Condicionales Instrucciones
-            {::}
+            {:
+            :}
     | Bucles Instrucciones       
-            {::}
+            {:
+            :}
     | Returns Instrucciones      
             {::}
     | BREAK Instrucciones
             {::}
     | Prints Instrucciones
-            {::}  
+            {:
+            :}  
     |
             {::}
         ;
@@ -238,53 +203,79 @@ Instrucciones ::=
 Asignaciones ::= 
     Datos:v IDENTIFICADOR:v1 ASIGNACION Operaciones:v2 PUNTOCOMA  
             {:
-                switch((int)v.value){
-                    case ParserSym.INT ->{
-                        if (v2.value instanceof Integer){
-                            if((!estaBoolean(v1))&&(!estaInteger(v1))){
-                                addSymbol(v1,(int)v2.value); 
-                                RESULT = new SymbolAsignaciones((int)v2.value);
+                if(errorSemantic){
+                    errorSemantic = false;
+                    RESULT = new SymbolAsignaciones();
+                }else{
+                    switch((int)v.value){
+                        case ParserSym.INT ->{
+                            if (v2.value instanceof Integer){
+                                if((!ts.estaBoolean(v1))&&(!ts.estaInteger(v1))){
+                                    ts.addSymbol(v1,(int)v2.value); 
+                                    RESULT = new SymbolAsignaciones((int)v2.value);
+                                }else{
+                                    errorSemantic = true;
+                                    report_error("El identificador "+v1+" ya se ha definido con anterioridad",v1);
+                                    RESULT = new SymbolAsignaciones();
+                                }
                             }else{
-                                System.out.println("El identificador "+v1+" ya se ha definido con anterioridad");
+                                errorSemantic = true;
+                                report_error("Se está añadiendo un booleano a un entero",v2);
+                                RESULT = new SymbolAsignaciones();
                             }
-                        }else{
-                            System.out.println("Se está añadiendo un booleano a un entero");
                         }
-                    }
-                    case ParserSym.BOOL ->{
-                        if (v2.value instanceof Boolean){
-                            if((!estaBoolean(v1))&&(!estaInteger(v1))){
-                                addSymbol(v1,(boolean)v2.value); 
-                                RESULT = new SymbolAsignaciones((boolean)v2.value);
+                        case ParserSym.BOOL ->{
+                            if (v2.value instanceof Boolean){
+                                if((!ts.estaBoolean(v1))&&(!ts.estaInteger(v1))){
+                                    ts.addSymbol(v1,(boolean)v2.value); 
+                                    RESULT = new SymbolAsignaciones((boolean)v2.value);
+                                }else{
+                                    errorSemantic = true;
+                                    report_error("El identificador "+v1+" ya se ha definido con anterioridad",v1);
+                                    RESULT = new SymbolAsignaciones();
+                                }
                             }else{
-                                System.out.println("El identificador "+v1+" ya se ha definido con anterioridad");
+                                errorSemantic = true;
+                                report_error("Se está añadiendo un entero a un booleano",v2);
+                                RESULT = new SymbolAsignaciones();
                             }
-                        }else{
-                            System.out.println("Se está añadiendo un entero a un booleano");
                         }
                     }
                 }
             :}
     |IDENTIFICADOR:v1 ASIGNACION Operaciones:v2 PUNTOCOMA       
             {: 
-                if (v2.value instanceof Integer){
-                    if((!estaBoolean(v1))&&(estaInteger(v1))){
-                        addSymbol(v1,(int)v2.value); 
-                        RESULT = new SymbolAsignaciones((int)v2.value);
-                     }else if(estaBoolean(v1)){
-                        System.out.println("El identificador "+v1+" es un boolano, estas añadiendo un entero");
-                     }else{
-                        System.out.println("El identificador "+v1+" no se ha definido con anteriodidad");
-                     }
+                if(errorSemantic){
+                    errorSemantic = false;
+                    RESULT = new SymbolAsignaciones();
                 }else{
-                    if((estaBoolean(v1))&&(!estaInteger(v1))){
-                        addSymbol(v1,(int)v2.value); 
-                        RESULT = new SymbolAsignaciones((int)v2.value);
-                     }else if(estaInteger(v1)){
-                        System.out.println("El identificador "+v1+" es un entero, estas añadiendo un booleano");
-                     }else{
-                        System.out.println("El identificador "+v1+" no se ha definido con anteriodidad");
-                     }
+                    if (v2.value instanceof Integer){
+                        if((!ts.estaBoolean(v1))&&(ts.estaInteger(v1))){
+                            ts.addSymbol(v1,(int)v2.value); 
+                            RESULT = new SymbolAsignaciones((int)v2.value);
+                         }else if(ts.estaBoolean(v1)){
+                            errorSemantic = true;
+                            report_error("El identificador "+v1+" es un boolano, estas añadiendo un entero",v2);
+                            RESULT = new SymbolAsignaciones();
+                         }else{
+                                errorSemantic = true;
+                                report_error("El identificador "+v1+" ya se ha definido con anterioridad",v1);
+                                RESULT = new SymbolAsignaciones();
+                         }
+                    }else{
+                        if((ts.estaBoolean(v1))&&(!ts.estaInteger(v1))){
+                            ts.addSymbol(v1,(int)v2.value); 
+                            RESULT = new SymbolAsignaciones((int)v2.value);
+                         }else if(ts.estaInteger(v1)){
+                            errorSemantic = true;
+                            report_error("El identificador "+v1+" es un entero, estas añadiendo un booleano",v2);
+                            RESULT = new SymbolAsignaciones();
+                         }else{
+                                errorSemantic = true;
+                                report_error("El identificador "+v1+" ya se ha definido con anterioridad",v1);
+                                RESULT = new SymbolAsignaciones();
+                         }
+                    }
                 }
             :}
         ;
@@ -304,25 +295,44 @@ Datos ::=
 Operaciones::=
     OperacionesAritmeticas:v
             {:
-                RESULT = new SymbolOperaciones((int)v.value);
+                if(errorSemantic){
+                    RESULT = new SymbolOperaciones();
+                }else{
+                    RESULT = new SymbolOperaciones((int)v.value);
+                }
             :}
     |Expresiones:v
             {:
-                RESULT = new SymbolOperaciones((boolean)v.value);
+                if(errorSemantic){
+                    RESULT = new SymbolOperaciones();
+                }else{
+                    RESULT = new SymbolOperaciones((boolean)v.value);
+                }
             :}
     |ID:v
             {:
-                if(v.value instanceof Boolean){
-                    RESULT = new SymbolOperaciones((boolean)v.value);
+                if(errorSemantic){
+                    RESULT = new SymbolOperaciones();
                 }else{
-                    RESULT = new SymbolOperaciones((int)v.value);
-                } 
+                    if(v.value instanceof Boolean){
+                        RESULT = new SymbolOperaciones((boolean)v.value);
+                    }else{
+                        RESULT = new SymbolOperaciones((int)v.value);
+                    } 
+                }
             :}
 
         ;
 
 Condicionales ::= 
-    IF LPARENTESIS Expresiones RPARENTESIS LLLAVE Instrucciones RLLAVE Else   
+    IF LPARENTESIS ExpresionesCondicional RPARENTESIS LLLAVE Instrucciones RLLAVE Else   
+            {::}
+        ;
+
+ExpresionesCondicional::=
+    Expresiones
+            {::}
+    |ID
             {::}
         ;
 
@@ -343,17 +353,17 @@ Bucles ::=
         ;
 
 While ::= 
-    WHILE LPARENTESIS Expresiones RPARENTESIS LLLAVE Instrucciones RLLAVE 
+    WHILE LPARENTESIS ExpresionesCondicional RPARENTESIS LLLAVE Instrucciones RLLAVE 
             {::}
         ;
 
 Do ::= 
-    DO LLLAVE Instrucciones RLLAVE WHILE LPARENTESIS Expresiones RPARENTESIS PUNTOCOMA 
+    DO LLLAVE Instrucciones RLLAVE WHILE LPARENTESIS ExpresionesCondicional RPARENTESIS PUNTOCOMA 
             {::}
         ;
 
 For::=
-    FOR LPARENTESIS Asignaciones PUNTOCOMA Expresiones PUNTOCOMA Incremento RPARENTESIS LLLAVE Instrucciones RLLAVE 
+    FOR LPARENTESIS Asignaciones PUNTOCOMA ExpresionesCondicional PUNTOCOMA Incremento RPARENTESIS LLLAVE Instrucciones RLLAVE 
             {::}
         ;
 
@@ -384,12 +394,16 @@ Enters::=
 ID ::= 
     IDENTIFICADOR:v 
             {:
-                if(estaInteger(v)){
-                    int valor = getSymbolValueInteger(v);
+                if(ts.estaInteger(v)){
+                    int valor = ts.getSymbolValueInteger(v);
                     RESULT = new SymbolID(valor);
-                }else if (estaBoolean(v)){
-                    boolean valor = getSymbolValueBoolean(v);
+                }else if (ts.estaBoolean(v)){
+                    boolean valor = ts.getSymbolValueBoolean(v);
                     RESULT = new SymbolID(valor);
+                }else{
+                    errorSemantic = true;
+                    report_error("Identificador no definido \""+v+"\"", v);
+                    RESULT = new SymbolID();
                 }
             :}
     | valor :v
@@ -400,46 +414,47 @@ ID ::=
 Expresiones ::= 
     Operaciones:v1 AND Operaciones:v2      
             {:
-                RESULT = new SymbolExpresiones(v1, ParserSym.AND,v2);
+                RESULT = new SymbolExpresiones(v1, ParserSym.AND,v2,parser);
             :}
     |Operaciones:v1 OR Operaciones:v2      
             {:
-                RESULT = new SymbolExpresiones(v1, ParserSym.OR,v2);
+                RESULT = new SymbolExpresiones(v1, ParserSym.OR,v2,parser);
             :}
     |Operaciones:v1 XOR Operaciones:v2     
             {:
-                RESULT = new SymbolExpresiones(v1, ParserSym.XOR,v2);
+                RESULT = new SymbolExpresiones(v1, ParserSym.XOR,v2,parser);
             :}
     |Operaciones:v1 EQUIVALENTE Operaciones:v2   
             {:
-                RESULT = new SymbolExpresiones(v1, ParserSym.EQUIVALENTE,v2);      
+                RESULT = new SymbolExpresiones(v1, ParserSym.EQUIVALENTE,v2,parser);      
             :}
     |Operaciones:v1 NOEQUIVALENTE Operaciones:v2  
             {:
-                RESULT = new SymbolExpresiones(v1, ParserSym.NOEQUIVALENTE,v2); 
+                RESULT = new SymbolExpresiones(v1, ParserSym.NOEQUIVALENTE,v2,parser); 
             :}
     |Operaciones:v1 MAYORIGUAL Operaciones:v2    
             {:
-                RESULT = new SymbolExpresiones(v1, ParserSym.MAYORIGUAL,v2);
+                RESULT = new SymbolExpresiones(v1, ParserSym.MAYORIGUAL,v2,parser);
             :}
     |Operaciones:v1 MAYOR Operaciones:v2        
             {:
-                RESULT = new SymbolExpresiones(v1, ParserSym.MAYOR,v2);
+                RESULT = new SymbolExpresiones(v1, ParserSym.MAYOR,v2,parser);
             :}
     |Operaciones:v1 MENORIGUAL Operaciones:v2   
             {:
-                RESULT = new SymbolExpresiones(v1, ParserSym.MENORIGUAL,v2);
+                RESULT = new SymbolExpresiones(v1, ParserSym.MENORIGUAL,v2,parser);
             :}
     |Operaciones:v1 MENOR Operaciones:v2      
             {:
-                RESULT = new SymbolExpresiones(v1, ParserSym.MENOR,v2); 
+                RESULT = new SymbolExpresiones(v1, ParserSym.MENOR,v2,parser); 
             :}
     |NOT Operaciones:v                
             {:
                 if(v.value instanceof Boolean){
                     RESULT = new SymbolExpresiones(!(boolean)v.value);
                 }else{
-                    System.out.println("Se está pasando por parametro un entero cuando debería ser booleano");
+                    errorSemantic = true;
+                    report_error("Se está pasando por parametro un entero cuando debería ser booleano: Valor pasado -> " + v , v);
                     RESULT = new SymbolExpresiones();
                 }
             :}
@@ -457,27 +472,63 @@ Expresiones ::=
 OperacionesAritmeticas::= 
     Operaciones:v1 SUMA Operaciones:v2  
             {:
-                RESULT = new SymbolOperacionesAritmeticas((int)v1.value,ParserSym.SUMA, v2);
+                if(v1.value instanceof Integer){
+                    RESULT = new SymbolOperacionesAritmeticas((int)v1.value,ParserSym.SUMA, v2,parser);
+                }else{
+                    errorSemantic = true;
+                    report_error("Se está pasando por parametro booleano cuando debería ser entero: Valor pasado -> " + v1 , v1);
+                    RESULT = new SymbolOperacionesAritmeticas();
+                }
             :}
     |Operaciones:v1 RESTA Operaciones:v2  
             {:
-                RESULT = new SymbolOperacionesAritmeticas((int)v1.value,ParserSym.RESTA, v2);
+                if(v1.value instanceof Integer){
+                    RESULT = new SymbolOperacionesAritmeticas((int)v1.value,ParserSym.RESTA, v2,parser);
+                }else{
+                    errorSemantic = true;
+                    report_error("Se está pasando por parametro booleano cuando debería ser entero: Valor pasado -> " + v1 , v1);
+                    RESULT = new SymbolOperacionesAritmeticas();
+                }
             :}
     |Operaciones:v1 MULTIPLICACION Operaciones:v2
             {:
-                RESULT = new SymbolOperacionesAritmeticas((int)v1.value,ParserSym.MULTIPLICACION, v2);
+                if(v1.value instanceof Integer){
+                    RESULT = new SymbolOperacionesAritmeticas((int)v1.value,ParserSym.MULTIPLICACION, v2,parser);
+                }else{
+                    errorSemantic = true;
+                    report_error("Se está pasando por parametro booleano cuando debería ser entero: Valor pasado -> " + v1 , v1);
+                    RESULT = new SymbolOperacionesAritmeticas();
+                }
             :}
     |Operaciones:v1 DIVISION Operaciones:v2
             {:
-                RESULT = new SymbolOperacionesAritmeticas((int)v1.value,ParserSym.DIVISION, v2);
+                if(v1.value instanceof Integer){
+                    RESULT = new SymbolOperacionesAritmeticas((int)v1.value,ParserSym.DIVISION, v2,parser);
+                }else{
+                    errorSemantic = true;
+                    report_error("Se está pasando por parametro booleano cuando debería ser entero: Valor pasado -> " + v1 , v1);
+                    RESULT = new SymbolOperacionesAritmeticas();
+                }
             :}
     |Operaciones:v1 MODULO Operaciones:v2
             {:
-                RESULT = new SymbolOperacionesAritmeticas((int)v1.value,ParserSym.MODULO, v2);
+                if(v1.value instanceof Integer){
+                    RESULT = new SymbolOperacionesAritmeticas((int)v1.value,ParserSym.MODULO, v2,parser);
+                }else{
+                    errorSemantic = true;
+                    report_error("Se está pasando por parametro booleano cuando debería ser entero: Valor pasado -> " + v1 , v1);
+                    RESULT = new SymbolOperacionesAritmeticas();
+                }
             :}
     |RESTA Operaciones:v
             {:
-                RESULT = new SymbolOperacionesAritmeticas(-1 * (int)v.value);
+                if(v.value instanceof Integer){
+                    RESULT = new SymbolOperacionesAritmeticas(-1 * (int)v.value);
+                }else{
+                    errorSemantic = true;
+                    report_error("Se está pasando por parametro booleano cuando debería ser entero: Valor pasado -> " + v , v);
+                    RESULT = new SymbolOperacionesAritmeticas();
+                }
             :}
         ;
     

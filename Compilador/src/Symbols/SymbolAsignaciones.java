@@ -16,4 +16,7 @@ public class SymbolAsignaciones extends SymbolBase{
     public SymbolAsignaciones(int valor){
         super("Asignaciones",valor);
     }
+    public SymbolAsignaciones(){
+        super();
+    }
 }

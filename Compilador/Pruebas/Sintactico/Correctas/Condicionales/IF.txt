@@ -1,0 +1,6 @@
+main{
+	boolean a = true;
+	if (a){
+		int b = 2 + 2;
+	} 
+}

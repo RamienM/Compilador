@@ -1,0 +1,8 @@
+main{
+	boolean a = false;
+	if (a){
+		int b = 2 + 2;
+	}else{
+		int c = 5;
+	} 
+}
