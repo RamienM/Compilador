@@ -31,21 +31,56 @@ public class SymbolExpresiones extends SymbolBase{
         }else{
             if ((valorOperacion.value instanceof Boolean) && (valorOperacionP.value instanceof Boolean)){
                 switch(operacion){
-                    case ParserSym.AND -> valor = (boolean)valorOperacion.value && (boolean)valorOperacionP.value;
-                    case ParserSym.OR -> valor = (boolean)valorOperacion.value || (boolean)valorOperacionP.value;
-                    case ParserSym.XOR -> valor = (boolean)valorOperacion.value ^ (boolean)valorOperacionP.value;
-                    case ParserSym.EQUIVALENTE -> valor = (boolean)valorOperacion.value == (boolean)valorOperacionP.value;
-                    case ParserSym.NOEQUIVALENTE -> valor = (boolean)valorOperacion.value != (boolean)valorOperacionP.value;
+                    case ParserSym.AND ->{ 
+                        valor = (boolean)valorOperacion.value && (boolean)valorOperacionP.value;
+                        System.out.println("and " + (boolean)valorOperacion.value + " " + (boolean)valorOperacionP.value + " " + "codigo t");
+                    }
+                    case ParserSym.OR ->{ 
+                        valor = (boolean)valorOperacion.value || (boolean)valorOperacionP.value;
+                        System.out.println("or " + (boolean)valorOperacion.value + " " + (boolean)valorOperacionP.value + " " + "codigo t");
+                    }
+                    case ParserSym.XOR ->{ 
+                        valor = (boolean)valorOperacion.value ^ (boolean)valorOperacionP.value;
+                        System.out.println("and " + (boolean)valorOperacion.value + " " + !(boolean)valorOperacionP.value + " " + "codigo t");
+                        System.out.println("and " + !(boolean)valorOperacion.value + " " + (boolean)valorOperacionP.value + " " + "codigo t+1");
+                        System.out.println("or " + "t" + " " + "t+1" + " " + "codigo t+2");
+                    }
+                    case ParserSym.EQUIVALENTE ->{ 
+                        valor = (boolean)valorOperacion.value == (boolean)valorOperacionP.value;
+                        System.out.println("if_EQ " + (boolean)valorOperacion.value + " " + (boolean)valorOperacionP.value + " " + "codigo t");
+                    }
+                    case ParserSym.NOEQUIVALENTE ->{ 
+                        valor = (boolean)valorOperacion.value != (boolean)valorOperacionP.value;
+                        System.out.println("if_NE " + (boolean)valorOperacion.value + " " + (boolean)valorOperacionP.value + " " + "codigo t");
+                    }
                     default -> mensajesError(1, parser, operacion,valorOperacion);
                 }
             }else if ((valorOperacion.value instanceof Integer) && (valorOperacionP.value instanceof Integer)){
                switch(operacion){
-                    case ParserSym.EQUIVALENTE -> valor = (int)valorOperacion.value == (int)valorOperacionP.value;
-                    case ParserSym.NOEQUIVALENTE -> valor = (int)valorOperacion.value != (int)valorOperacionP.value;
-                    case ParserSym.MAYORIGUAL -> valor = (int)valorOperacion.value >= (int)valorOperacionP.value;
-                    case ParserSym.MAYOR -> valor = (int)valorOperacion.value > (int)valorOperacionP.value;
-                    case ParserSym.MENORIGUAL -> valor = (int)valorOperacion.value <= (int)valorOperacionP.value;
-                    case ParserSym.MENOR -> valor = (int)valorOperacion.value < (int)valorOperacionP.value;
+                    case ParserSym.EQUIVALENTE ->{ 
+                        valor = (int)valorOperacion.value == (int)valorOperacionP.value;
+                        System.out.println("if_EQ " + (int)valorOperacion.value + " " + (int)valorOperacionP.value + " " + "codigo t");
+                    }
+                    case ParserSym.NOEQUIVALENTE ->{ 
+                        valor = (int)valorOperacion.value != (int)valorOperacionP.value;
+                        System.out.println("if_NE " + (int)valorOperacion.value + " " + (int)valorOperacionP.value + " " + "codigo t");
+                    }
+                    case ParserSym.MAYORIGUAL ->{ 
+                        valor = (int)valorOperacion.value >= (int)valorOperacionP.value;
+                        System.out.println("if_GE " + (int)valorOperacion.value + " " + (int)valorOperacionP.value + " " + "codigo t");
+                    }
+                    case ParserSym.MAYOR ->{ 
+                        valor = (int)valorOperacion.value > (int)valorOperacionP.value;
+                        System.out.println("if_GT " + (int)valorOperacion.value + " " + (int)valorOperacionP.value + " " + "codigo t");
+                    }
+                    case ParserSym.MENORIGUAL ->{ 
+                        valor = (int)valorOperacion.value <= (int)valorOperacionP.value;
+                        System.out.println("if_LE " + (int)valorOperacion.value + " " + (int)valorOperacionP.value + " " + "codigo t");
+                    }
+                    case ParserSym.MENOR ->{ 
+                        valor = (int)valorOperacion.value < (int)valorOperacionP.value;
+                        System.out.println("if_LT " + (int)valorOperacion.value + " " + (int)valorOperacionP.value + " " + "codigo t");
+                    }
                     default -> mensajesError(1, parser, operacion,valorOperacion);
                 }
             }else{
@@ -120,6 +155,6 @@ public class SymbolExpresiones extends SymbolBase{
                         }
                     }  
                 }
-    }
-    
+    } 
+   
 }

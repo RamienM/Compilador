@@ -104,8 +104,8 @@ non terminal Instrucciones;
 non terminal SymbolDatos Datos;
 
 
-non terminal Condicionales;
-non terminal ExpresionesCondicional;
+non terminal SymbolCondicional Condicionales;
+non terminal SymbolExpresionesCondicional ExpresionesCondicional;
 non terminal Bucles;
 non terminal While;
 non terminal Do;
@@ -325,22 +325,46 @@ Operaciones::=
         ;
 
 Condicionales ::= 
-    IF LPARENTESIS ExpresionesCondicional RPARENTESIS LLLAVE Instrucciones RLLAVE Else   
-            {::}
+    IF LPARENTESIS ExpresionesCondicional:v RPARENTESIS LLLAVE Instrucciones RLLAVE Else   
+            {:
+                new SymbolCondicional() //Construye el código de 3 direcciones
+            :}
         ;
 
 ExpresionesCondicional::=
-    Expresiones
-            {::}
-    |ID
-            {::}
+    Expresiones: v
+            {:
+                if(errorSemantic){
+                    RESULT = new SymbolExpresionesCondicional();
+                }else{
+                    RESULT = new SymbolExpresionesCondicional((boolean)v.value);
+                } 
+            :}
+    |ID: v
+            {:
+                if(errorSemantic){
+                    RESULT = new SymbolExpresionesCondicional();
+                }else{
+                    if(v.value instanceof Boolean){
+                        RESULT = new SymbolExpresionesCondicional((boolean)v.value);
+                    }else{
+                        errorSemantic = true;
+                        report_error("Se esperaba un identificador booleano, se ha obtenido un identificador entero: \""+v+"\"", v);
+                        RESULT = new SymbolExpresionesCondicional();
+                    } 
+                } 
+            :}
         ;
 
 Else ::= 
     ELSE LLLAVE Instrucciones RLLAVE  
-            {::}
+            {:
+                //Construye el código de 3 direcciones
+            :}
     | 
-            {::}  
+            {:
+                //Construye el código de 3 direcciones
+            :}  
         ;
 
 Bucles ::= 
@@ -354,23 +378,29 @@ Bucles ::=
 
 While ::= 
     WHILE LPARENTESIS ExpresionesCondicional RPARENTESIS LLLAVE Instrucciones RLLAVE 
-            {::}
+            {:
+                new SymbolWhile()//Construye el código de 3 direcciones
+            :}
         ;
 
 Do ::= 
     DO LLLAVE Instrucciones RLLAVE WHILE LPARENTESIS ExpresionesCondicional RPARENTESIS PUNTOCOMA 
-            {::}
+            {:
+                //Construye el código de 3 direcciones
+            :}
         ;
 
 For::=
     FOR LPARENTESIS Asignaciones PUNTOCOMA ExpresionesCondicional PUNTOCOMA Incremento RPARENTESIS LLLAVE Instrucciones RLLAVE 
-            {::}
+            {:
+                //Construye el código de 3 direcciones
+            :}
         ;
 
 Returns ::= 
     RETURN ID:v PUNTOCOMA 
             {:
-                //RESULT = new SymbolReturns(v.value);
+                RESULT = new SymbolID(v);
             :}
         ;
 
