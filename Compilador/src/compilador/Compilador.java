@@ -5,7 +5,6 @@
 package compilador;
 
 import java.io.FileReader;
-import java.util.Scanner;
 import JFlex.Lector;
 import CUP.Parser;
 import java.io.FileNotFoundException;
@@ -39,6 +38,11 @@ public class Compilador {
                 parser.parse();
                 parser.printVars();
                 in.close();
+                if (parser.getErroresEncontrados() == 0){
+                    //generar codigo sin optimizar EASY
+                    //Optimizar código 3 direcciones
+                    //generar codigo EASY optimizado
+                }
             } catch (FileNotFoundException e) {
                 System.out.println("El fichero introducido no existe");
             } catch (IOException e) {

@@ -12,6 +12,7 @@ class Parser;
 
 parser code {:
     private TablaDeSimbolos ts = new TablaDeSimbolos();
+    private int erroresEncontrados = 0;
 
     public void printVars(){
         ts.printVars(System.out);
@@ -31,6 +32,7 @@ parser code {:
 
     public void errorEncontrado(){
         errorSemantic= true;
+        this.erroresEncontrados++;
     }
 
     @Override
@@ -64,6 +66,10 @@ parser code {:
     public void report_fatal_error(String message, Object info) throws Exception{
         report_error("Error irrecuperable (" + message + ")", info);
         done_parsing();
+    }
+
+    public int getErroresEncontrados(){
+        return erroresEncontrados;
     }
     
 :}
@@ -104,13 +110,13 @@ non terminal Instrucciones;
 non terminal SymbolDatos Datos;
 
 
-non terminal SymbolCondicional Condicionales;
+non terminal Condicionales;
 non terminal SymbolExpresionesCondicional ExpresionesCondicional;
 non terminal Bucles;
 non terminal While;
 non terminal Do;
 non terminal For;
-non terminal Returns;
+non terminal Return;
 non terminal Prints;
 non terminal Enters;
 
@@ -158,7 +164,7 @@ Procedimiento ::=
         ;
 
 Funcion ::= 
-    FUNT IDENTIFICADOR LPARENTESIS Atributos RPARENTESIS LLLAVE Instrucciones RLLAVE  
+    FUNT IDENTIFICADOR LPARENTESIS Atributos RPARENTESIS LLLAVE Instrucciones Return RLLAVE  
             {::}
         ;
 
@@ -188,14 +194,15 @@ Instrucciones ::=
             :}
     | Bucles Instrucciones       
             {:
-            :}
-    | Returns Instrucciones      
+            :}    
             {::}
     | BREAK Instrucciones
             {::}
     | Prints Instrucciones
             {:
             :}  
+    | Enters Instrucciones
+            {::}
     |
             {::}
         ;
@@ -214,12 +221,12 @@ Asignaciones ::=
                                     ts.addSymbol(v1,(int)v2.value); 
                                     RESULT = new SymbolAsignaciones((int)v2.value);
                                 }else{
-                                    errorSemantic = true;
+                                    errorEncontrado();
                                     report_error("El identificador "+v1+" ya se ha definido con anterioridad",v1);
                                     RESULT = new SymbolAsignaciones();
                                 }
                             }else{
-                                errorSemantic = true;
+                                errorEncontrado();
                                 report_error("Se está añadiendo un booleano a un entero",v2);
                                 RESULT = new SymbolAsignaciones();
                             }
@@ -230,12 +237,12 @@ Asignaciones ::=
                                     ts.addSymbol(v1,(boolean)v2.value); 
                                     RESULT = new SymbolAsignaciones((boolean)v2.value);
                                 }else{
-                                    errorSemantic = true;
+                                    errorEncontrado();
                                     report_error("El identificador "+v1+" ya se ha definido con anterioridad",v1);
                                     RESULT = new SymbolAsignaciones();
                                 }
                             }else{
-                                errorSemantic = true;
+                                errorEncontrado();
                                 report_error("Se está añadiendo un entero a un booleano",v2);
                                 RESULT = new SymbolAsignaciones();
                             }
@@ -254,11 +261,11 @@ Asignaciones ::=
                             ts.addSymbol(v1,(int)v2.value); 
                             RESULT = new SymbolAsignaciones((int)v2.value);
                          }else if(ts.estaBoolean(v1)){
-                            errorSemantic = true;
+                            errorEncontrado();
                             report_error("El identificador "+v1+" es un boolano, estas añadiendo un entero",v2);
                             RESULT = new SymbolAsignaciones();
                          }else{
-                                errorSemantic = true;
+                                errorEncontrado();
                                 report_error("El identificador "+v1+" ya se ha definido con anterioridad",v1);
                                 RESULT = new SymbolAsignaciones();
                          }
@@ -267,11 +274,11 @@ Asignaciones ::=
                             ts.addSymbol(v1,(int)v2.value); 
                             RESULT = new SymbolAsignaciones((int)v2.value);
                          }else if(ts.estaInteger(v1)){
-                            errorSemantic = true;
+                            errorEncontrado();
                             report_error("El identificador "+v1+" es un entero, estas añadiendo un booleano",v2);
                             RESULT = new SymbolAsignaciones();
                          }else{
-                                errorSemantic = true;
+                                errorEncontrado();
                                 report_error("El identificador "+v1+" ya se ha definido con anterioridad",v1);
                                 RESULT = new SymbolAsignaciones();
                          }
@@ -327,7 +334,7 @@ Operaciones::=
 Condicionales ::= 
     IF LPARENTESIS ExpresionesCondicional:v RPARENTESIS LLLAVE Instrucciones RLLAVE Else   
             {:
-                new SymbolCondicional() //Construye el código de 3 direcciones
+                //Construye el código de 3 direcciones
             :}
         ;
 
@@ -348,7 +355,7 @@ ExpresionesCondicional::=
                     if(v.value instanceof Boolean){
                         RESULT = new SymbolExpresionesCondicional((boolean)v.value);
                     }else{
-                        errorSemantic = true;
+                        errorEncontrado();
                         report_error("Se esperaba un identificador booleano, se ha obtenido un identificador entero: \""+v+"\"", v);
                         RESULT = new SymbolExpresionesCondicional();
                     } 
@@ -379,7 +386,7 @@ Bucles ::=
 While ::= 
     WHILE LPARENTESIS ExpresionesCondicional RPARENTESIS LLLAVE Instrucciones RLLAVE 
             {:
-                new SymbolWhile()//Construye el código de 3 direcciones
+               //Construye el código de 3 direcciones
             :}
         ;
 
@@ -397,11 +404,12 @@ For::=
             :}
         ;
 
-Returns ::= 
+Return ::= 
     RETURN ID:v PUNTOCOMA 
             {:
-                RESULT = new SymbolID(v);
             :}
+    |
+            {::}
         ;
 
 Prints::=
@@ -431,7 +439,7 @@ ID ::=
                     boolean valor = ts.getSymbolValueBoolean(v);
                     RESULT = new SymbolID(valor);
                 }else{
-                    errorSemantic = true;
+                    errorEncontrado();
                     report_error("Identificador no definido \""+v+"\"", v);
                     RESULT = new SymbolID();
                 }
@@ -483,7 +491,7 @@ Expresiones ::=
                 if(v.value instanceof Boolean){
                     RESULT = new SymbolExpresiones(!(boolean)v.value);
                 }else{
-                    errorSemantic = true;
+                    errorEncontrado();
                     report_error("Se está pasando por parametro un entero cuando debería ser booleano: Valor pasado -> " + v , v);
                     RESULT = new SymbolExpresiones();
                 }
@@ -505,7 +513,7 @@ OperacionesAritmeticas::=
                 if(v1.value instanceof Integer){
                     RESULT = new SymbolOperacionesAritmeticas((int)v1.value,ParserSym.SUMA, v2,parser);
                 }else{
-                    errorSemantic = true;
+                    errorEncontrado();
                     report_error("Se está pasando por parametro booleano cuando debería ser entero: Valor pasado -> " + v1 , v1);
                     RESULT = new SymbolOperacionesAritmeticas();
                 }
@@ -515,7 +523,7 @@ OperacionesAritmeticas::=
                 if(v1.value instanceof Integer){
                     RESULT = new SymbolOperacionesAritmeticas((int)v1.value,ParserSym.RESTA, v2,parser);
                 }else{
-                    errorSemantic = true;
+                    errorEncontrado();
                     report_error("Se está pasando por parametro booleano cuando debería ser entero: Valor pasado -> " + v1 , v1);
                     RESULT = new SymbolOperacionesAritmeticas();
                 }
@@ -525,7 +533,7 @@ OperacionesAritmeticas::=
                 if(v1.value instanceof Integer){
                     RESULT = new SymbolOperacionesAritmeticas((int)v1.value,ParserSym.MULTIPLICACION, v2,parser);
                 }else{
-                    errorSemantic = true;
+                    errorEncontrado();
                     report_error("Se está pasando por parametro booleano cuando debería ser entero: Valor pasado -> " + v1 , v1);
                     RESULT = new SymbolOperacionesAritmeticas();
                 }
@@ -535,7 +543,7 @@ OperacionesAritmeticas::=
                 if(v1.value instanceof Integer){
                     RESULT = new SymbolOperacionesAritmeticas((int)v1.value,ParserSym.DIVISION, v2,parser);
                 }else{
-                    errorSemantic = true;
+                    errorEncontrado();
                     report_error("Se está pasando por parametro booleano cuando debería ser entero: Valor pasado -> " + v1 , v1);
                     RESULT = new SymbolOperacionesAritmeticas();
                 }
@@ -545,7 +553,7 @@ OperacionesAritmeticas::=
                 if(v1.value instanceof Integer){
                     RESULT = new SymbolOperacionesAritmeticas((int)v1.value,ParserSym.MODULO, v2,parser);
                 }else{
-                    errorSemantic = true;
+                    errorEncontrado();
                     report_error("Se está pasando por parametro booleano cuando debería ser entero: Valor pasado -> " + v1 , v1);
                     RESULT = new SymbolOperacionesAritmeticas();
                 }
@@ -555,7 +563,7 @@ OperacionesAritmeticas::=
                 if(v.value instanceof Integer){
                     RESULT = new SymbolOperacionesAritmeticas(-1 * (int)v.value);
                 }else{
-                    errorSemantic = true;
+                    errorEncontrado();
                     report_error("Se está pasando por parametro booleano cuando debería ser entero: Valor pasado -> " + v , v);
                     RESULT = new SymbolOperacionesAritmeticas();
                 }
