@@ -25,15 +25,25 @@ public class SymbolOperacionesAritmeticas extends SymbolBase{
         }else{
             if(valorOperacionP.value instanceof Integer){
                 switch(operacion){
-                    case ParserSym.SUMA -> valor = valorOperacion + (int)valorOperacionP.value;
-                    case ParserSym.RESTA -> valor = valorOperacion - (int)valorOperacionP.value;
-                    case ParserSym.MULTIPLICACION -> valor = valorOperacion * (int)valorOperacionP.value;
+                    case ParserSym.SUMA ->{ 
+                        valor = valorOperacion + (int)valorOperacionP.value;
+                        System.out.println("suma " + valorOperacion + " " + (int)valorOperacionP.value + " " + "codigo t");
+                    }
+                    case ParserSym.RESTA ->{ 
+                        valor = valorOperacion - (int)valorOperacionP.value;
+                        System.out.println("resta " + valorOperacion + " " + (int)valorOperacionP.value + " " + "codigo t");
+                    }
+                    case ParserSym.MULTIPLICACION ->{ 
+                        valor = valorOperacion * (int)valorOperacionP.value;
+                        System.out.println("producte " + valorOperacion + " " + (int)valorOperacionP.value + " " + "codigo t");
+                    }
                     case ParserSym.DIVISION -> {
                         int division = (int)valorOperacionP.value;
                         if(division == 0){
                             mensajesError(parser, 1, valorOperacionP,valorOperacion);
                         }else{
                             valor = valorOperacion / division;
+                            System.out.println("divisio " + valorOperacion + " " + (int)valorOperacionP.value + " " + "codigo t");
                         }
                     }
                     case ParserSym.MODULO -> {
@@ -42,6 +52,7 @@ public class SymbolOperacionesAritmeticas extends SymbolBase{
                             mensajesError(parser, 2, valorOperacionP,valorOperacion);
                         }else{
                             valor = valorOperacion % modulo;
+                            System.out.println("modul " + valorOperacion + " " + (int)valorOperacionP.value + " " + "codigo t");
                         }
                     }
                 }

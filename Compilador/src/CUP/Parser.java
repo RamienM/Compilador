@@ -8,6 +8,9 @@ package CUP;
 import java_cup.runtime.ComplexSymbolFactory.ComplexSymbol;
 import java_cup.runtime.ComplexSymbolFactory.Location;
 import java_cup.runtime.*;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import Symbols.*;
 import CUP.*;
 import java_cup.runtime.XMLElement;
@@ -465,7 +468,49 @@ public class Parser extends java_cup.runtime.lr_parser {
     public int getErroresEncontrados(){
         return erroresEncontrados;
     }
+
+    /*
+        ---------------------ESCRITURA DE CODIGO DE TRES DIRECCIONES---------------------
+    */
+    private int t; //Nos permitirá ir llevando la cuenta de variables temporales a usar
+    private int e;
+    BufferedWriter escritura;
+
+    public void iniciarEscritura(){
+        try{
+            escritura = new BufferedWriter(new FileWriter("CodigoDirecciones.txt"));
+        }catch(IOException e){
+            System.out.println("Se ha producido un error al crear el archivo CodigoDirecciones.txt");
+        }
+        this.t= 0;
+        this.e = 0;
+    }
     
+    public void putLine(String line){
+        try{
+            escritura.write(line);
+        }catch(IOException e){
+            System.out.println("Error al escribir en el fichero: " +line + " Error: " + e);
+        }
+        this.t++;
+    }
+    
+    public void putEtiqueta(String line){
+        try{
+            escritura.write(line);
+        }catch(IOException e){
+            System.out.println("Error al escribir en el fichero: " +line + " Error: " + e);
+        }
+        this.e++;
+    }
+    
+    public void close(){
+        try{
+            escritura.close();
+        }catch(IOException e){
+            System.out.println("Error al cerrar en el fichero. Error: " + e);
+        }
+    }
 
 
 /** Cup generated class to encapsulate user supplied action code.*/

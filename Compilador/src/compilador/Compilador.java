@@ -35,7 +35,9 @@ public class Compilador {
                 Lector scanner = new Lector(in);
                 SymbolFactory sf = new ComplexSymbolFactory();
                 Parser parser = new Parser(scanner, sf);
+                parser.iniciarEscritura();
                 parser.parse();
+                parser.close();
                 parser.printVars();
                 in.close();
                 if (parser.getErroresEncontrados() == 0){
