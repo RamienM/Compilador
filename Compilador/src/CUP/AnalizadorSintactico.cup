@@ -15,6 +15,7 @@ import CUP.*;
 class Parser;
 
 parser code {:
+    //Tabla de simbolos incorrecta
     private TablaDeSimbolos ts = new TablaDeSimbolos();
     private int erroresEncontrados = 0;
 
@@ -133,13 +134,13 @@ terminal AND, OR, XOR, NOT;
 //Parentesis, llaves y asignacion
 terminal LPARENTESIS, RPARENTESIS, LLLAVE, RLLAVE, ASIGNACION;
 //Puntos y comas
-terminal PUNTOCOMA, COMA, PUNTO;
+terminal PUNTOCOMA, COMA;
 //Condicionales
 terminal IF, ELSE;
 //Bucles
 terminal WHILE, DO, FOR;
 //Palabras reservadas
-terminal RETURN, MAIN, INT, BOOL, PROC, FUNT, BREAK, PRINT, PRINTLN, ENTER, ENTERLN, TRUE, FALSE;
+terminal RETURN, MAIN, INT, BOOL, PAIR, PROC, FUNT, BREAK, PRINT, PRINTLN, ENTER, ENTERLN, TRUE, FALSE;
 
 non terminal Bloque;
 non terminal BloqueP;
@@ -167,6 +168,7 @@ non terminal Prints;
 non terminal Enters;
 
 non terminal Asignaciones;
+non terminal Tupla;
 
 non terminal SymbolID ID;
 
@@ -330,6 +332,16 @@ Asignaciones ::=
                          }
                     }
                 }
+            :}
+        ;
+
+Tupla::=
+    PAIR MENOR Datos COMA Datos MAYOR IDENTIFICADOR ASIGNACION LPARENTESIS Operaciones COMA Operaciones RPARENTESIS PUNTOCOMA
+            {:
+                //Comprobar formación y Unir con asignación
+            :}
+    |IDENTIFICADOR ASIGNACION LPARENTESIS Operaciones COMA Operaciones RPARENTESIS PUNTOCOMA
+            {:           
             :}
         ;
 

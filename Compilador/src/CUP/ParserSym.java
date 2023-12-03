@@ -11,26 +11,26 @@ public class ParserSym {
   public static final int ENTER = 41;
   public static final int XOR = 17;
   public static final int RESTA = 5;
-  public static final int INT = 34;
+  public static final int INT = 33;
   public static final int PRINTLN = 40;
   public static final int PUNTOCOMA = 24;
   public static final int NOEQUIVALENTE = 14;
-  public static final int FOR = 31;
+  public static final int FOR = 30;
   public static final int IDENTIFICADOR = 2;
   public static final int NOT = 18;
   public static final int MENORIGUAL = 10;
   public static final int AND = 15;
   public static final int LLLAVE = 21;
   public static final int OR = 16;
-  public static final int BOOL = 35;
   public static final int LPARENTESIS = 19;
+  public static final int BOOL = 34;
   public static final int RLLAVE = 22;
   public static final int SUMA = 4;
-  public static final int MAIN = 33;
-  public static final int IF = 27;
+  public static final int MAIN = 32;
+  public static final int IF = 26;
   public static final int MAYORIGUAL = 11;
   public static final int EOF = 0;
-  public static final int RETURN = 32;
+  public static final int RETURN = 31;
   public static final int TRUE = 43;
   public static final int error = 1;
   public static final int COMA = 25;
@@ -39,18 +39,18 @@ public class ParserSym {
   public static final int MENOR = 13;
   public static final int valor = 3;
   public static final int BREAK = 38;
+  public static final int PAIR = 35;
   public static final int ENTERLN = 42;
   public static final int ASIGNACION = 23;
   public static final int MAYOR = 12;
-  public static final int ELSE = 28;
-  public static final int PUNTO = 26;
-  public static final int WHILE = 29;
+  public static final int ELSE = 27;
+  public static final int WHILE = 28;
   public static final int PROC = 36;
   public static final int FALSE = 44;
   public static final int DIVISION = 7;
   public static final int PRINT = 39;
   public static final int EQUIVALENTE = 9;
-  public static final int DO = 30;
+  public static final int DO = 29;
   public static final int RPARENTESIS = 20;
   public static final int MULTIPLICACION = 6;
   public static final String[] terminalNames = new String[] {
@@ -80,7 +80,6 @@ public class ParserSym {
   "ASIGNACION",
   "PUNTOCOMA",
   "COMA",
-  "PUNTO",
   "IF",
   "ELSE",
   "WHILE",
@@ -90,6 +89,7 @@ public class ParserSym {
   "MAIN",
   "INT",
   "BOOL",
+  "PAIR",
   "PROC",
   "FUNT",
   "BREAK",

@@ -59,9 +59,6 @@ integer = 0 | ([1-9]{digit}*)
 booleanTrue = true
 booleanFalse = false
 
-//constantes
-//const_final = const
-
 //asignacion
 asignacion = \=
 
@@ -93,12 +90,9 @@ parentesis_l = \(
 parentesis_r = \)
 llave_l = \{
 llave_r = \}
-//corchete_l = \[
-//corchete_r = \]
 
 //puntos y comas
 punto_coma = ;
-punto =      \.
 coma =       ,
 
 //Condicionales
@@ -108,9 +102,6 @@ cond_else = else
 cond_while = while
 cond_for = for
 cond_do = do
-//cond_switch = switch
-//cond_case = case
-//cond_default = default
 
 //Palabras reservadas
 //res_null = null
@@ -126,6 +117,7 @@ res_funcion = funt
 //--Tipo de Datos
 int = int
 bool = boolean
+tupla = pair
 
 
 //Identificador
@@ -176,7 +168,6 @@ blockcomment = \/\*({character}|{digit}|{space})*\*\/
         //Puntos y comas
         {punto_coma}                   { return symbol(ParserSym.PUNTOCOMA); }
         {coma}                         { return symbol(ParserSym.COMA); }
-        {punto}                        { return symbol(ParserSym.PUNTO); }
 
         //Asignación
         {asignacion}                   { return symbol(ParserSym.ASIGNACION); }
@@ -188,9 +179,6 @@ blockcomment = \/\*({character}|{digit}|{space})*\*\/
         {cond_while}                   { return symbol(ParserSym.WHILE); }
         {cond_for}                     { return symbol(ParserSym.FOR); }
         {cond_do}                      { return symbol(ParserSym.DO); }
-        //{cond_switch}                  { return new Symbol(sym.SWITCH, yychar, yyline, yytext()); }
-        //{cond_case}                    { return new Symbol(sym.CASE, yychar, yyline, yytext()); }
-        //{cond_default}                 { return new Symbol(sym.DEFAULT, yychar, yyline, yytext()); }
 
 
         //Palabras reservadas
@@ -207,8 +195,7 @@ blockcomment = \/\*({character}|{digit}|{space})*\*\/
         //--Tipo de datos
         {int}                          { return symbol(ParserSym.INT); }
         {bool}                         { return symbol(ParserSym.BOOL); }
-        //--constantes
-        //{const_final}                  { return symbol(ParserSym.CONST);}
+        {tupla}                        { return symbol(ParserSym.PAIR); }
 
         //Comentarios
         {linecomment}                  {/*Ignore*/}
