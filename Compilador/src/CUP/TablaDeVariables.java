@@ -12,7 +12,7 @@ import jflex.base.Pair;
  *
  * @author Usuario
  */
-public class TablaDeSimbolos {
+public class TablaDeVariables {
     /*
         La siguiente tabla esta compuesta por una tupla que contiene:
             -Primer Integer: Tipo de dato -> 
@@ -25,7 +25,7 @@ public class TablaDeSimbolos {
                 Para enteros:
                     Los números enteros
     */
-    private HashMap<String, Pair<Integer,Integer>>tsymbols = new HashMap<>();
+    private HashMap<String, Pair<Integer,Integer>>tvariables = new HashMap<>();
     
     /**
      * Las siguientes funciones se encargan de comprobar de si la petición de
@@ -35,50 +35,50 @@ public class TablaDeSimbolos {
      * @return Devuelve un valor si la operación de obtención es correcta, 
      *          en caso contrario se devuelve null.
      */
-    public int getSymbolValueInteger(String id){     
-        return tsymbols.get(id).snd;
+    public int getVariableValueInteger(String id){     
+        return tvariables.get(id).snd;
     }
-    public boolean getSymbolValueBoolean(String id){
-        return tsymbols.get(id).snd != 0; 
+    public boolean getVariableValueBoolean(String id){
+        return tvariables.get(id).snd != 0; 
     }
     
     public boolean estaInteger(String id){
-        if(tsymbols.containsKey(id)){
-            Integer tipo= tsymbols.get(id).fst;
+        if(tvariables.containsKey(id)){
+            Integer tipo= tvariables.get(id).fst;
             if (tipo == 0) return true;
         }       
         return false;
     }
     public boolean estaBoolean(String id){
-        if(tsymbols.containsKey(id)){
-            Integer tipo= tsymbols.get(id).fst;
+        if(tvariables.containsKey(id)){
+            Integer tipo= tvariables.get(id).fst;
             if (tipo == 1) return true;
         }       
         return false;
     }
 
-    public void addSymbol(String id, int value){
-        if(tsymbols.containsKey(id)){
-            tsymbols.replace(id,new Pair<>(0,value));
+    public void addVariable(String id, int value){
+        if(tvariables.containsKey(id)){
+            tvariables.replace(id,new Pair<>(0,value));
         }else{
-            tsymbols.put(id,new Pair<>(0,value));
+            tvariables.put(id,new Pair<>(0,value));
         }
     }
-    public void addSymbol(String id, boolean value){
+    public void addVariable(String id, boolean value){
         int valor = 0;
         if (value) valor = 1;
-        if(tsymbols.containsKey(id)){
-            tsymbols.replace(id,new Pair<>(1,valor));
+        if(tvariables.containsKey(id)){
+            tvariables.replace(id,new Pair<>(1,valor));
         }else{
-            tsymbols.put(id, new Pair<>(1,valor));
+            tvariables.put(id, new Pair<>(1,valor));
         }
     }
     
     public void printVars(PrintStream out) {
-        if (tsymbols.isEmpty()) {
+        if (tvariables.isEmpty()) {
             out.println("No hi ha variables declarades");
         } else {
-            tsymbols.forEach((k,v) -> {
+            tvariables.forEach((k,v) -> {
                 String fmt ;
                 if (v.fst == 0){
                     fmt = "%-8s: %d";

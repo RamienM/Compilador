@@ -16,11 +16,11 @@ class Parser;
 
 parser code {:
     //Tabla de simbolos incorrecta
-    private TablaDeSimbolos ts = new TablaDeSimbolos();
+    private TablaDeVariables tv = new TablaDeVariables();
     private int erroresEncontrados = 0;
 
     public void printVars(){
-        ts.printVars(System.out);
+        tv.printVars(System.out);
     }
     /**
     * Nos permite saber si se ha detectado un error:
@@ -75,49 +75,6 @@ parser code {:
 
     public int getErroresEncontrados(){
         return erroresEncontrados;
-    }
-
-    /*
-        ---------------------ESCRITURA DE CODIGO DE TRES DIRECCIONES---------------------
-    */
-    private int t; //Nos permitirá ir llevando la cuenta de variables temporales a usar
-    private int e;
-    BufferedWriter escritura;
-
-    public void iniciarEscritura(){
-        try{
-            escritura = new BufferedWriter(new FileWriter("CodigoDirecciones.txt"));
-        }catch(IOException e){
-            System.out.println("Se ha producido un error al crear el archivo CodigoDirecciones.txt");
-        }
-        this.t= 0;
-        this.e = 0;
-    }
-    
-    public void putLine(String line){
-        try{
-            escritura.write(line);
-        }catch(IOException e){
-            System.out.println("Error al escribir en el fichero: " +line + " Error: " + e);
-        }
-        this.t++;
-    }
-    
-    public void putEtiqueta(String line){
-        try{
-            escritura.write(line);
-        }catch(IOException e){
-            System.out.println("Error al escribir en el fichero: " +line + " Error: " + e);
-        }
-        this.e++;
-    }
-    
-    public void close(){
-        try{
-            escritura.close();
-        }catch(IOException e){
-            System.out.println("Error al cerrar en el fichero. Error: " + e);
-        }
     }
 :}
 
@@ -265,8 +222,8 @@ Asignaciones ::=
                     switch((int)v.value){
                         case ParserSym.INT ->{
                             if (v2.value instanceof Integer){
-                                if((!ts.estaBoolean(v1))&&(!ts.estaInteger(v1))){
-                                    ts.addSymbol(v1,(int)v2.value); 
+                                if((!tv.estaBoolean(v1))&&(!tv.estaInteger(v1))){
+                                    tv.addVariable(v1,(int)v2.value); 
                                     RESULT = new SymbolAsignaciones((int)v2.value);
                                 }else{
                                     errorEncontrado();
@@ -281,8 +238,8 @@ Asignaciones ::=
                         }
                         case ParserSym.BOOL ->{
                             if (v2.value instanceof Boolean){
-                                if((!ts.estaBoolean(v1))&&(!ts.estaInteger(v1))){
-                                    ts.addSymbol(v1,(boolean)v2.value); 
+                                if((!tv.estaBoolean(v1))&&(!tv.estaInteger(v1))){
+                                    tv.addVariable(v1,(boolean)v2.value); 
                                     RESULT = new SymbolAsignaciones((boolean)v2.value);
                                 }else{
                                     errorEncontrado();
@@ -305,10 +262,10 @@ Asignaciones ::=
                     RESULT = new SymbolAsignaciones();
                 }else{
                     if (v2.value instanceof Integer){
-                        if((!ts.estaBoolean(v1))&&(ts.estaInteger(v1))){
-                            ts.addSymbol(v1,(int)v2.value); 
+                        if((!tv.estaBoolean(v1))&&(tv.estaInteger(v1))){
+                            tv.addVariable(v1,(int)v2.value); 
                             RESULT = new SymbolAsignaciones((int)v2.value);
-                         }else if(ts.estaBoolean(v1)){
+                         }else if(tv.estaBoolean(v1)){
                             errorEncontrado();
                             report_error("El identificador "+v1+" es un boolano, estas añadiendo un entero",v2);
                             RESULT = new SymbolAsignaciones();
@@ -318,10 +275,10 @@ Asignaciones ::=
                                 RESULT = new SymbolAsignaciones();
                          }
                     }else{
-                        if((ts.estaBoolean(v1))&&(!ts.estaInteger(v1))){
-                            ts.addSymbol(v1,(int)v2.value); 
+                        if((tv.estaBoolean(v1))&&(!tv.estaInteger(v1))){
+                            tv.addVariable(v1,(int)v2.value); 
                             RESULT = new SymbolAsignaciones((int)v2.value);
-                         }else if(ts.estaInteger(v1)){
+                         }else if(tv.estaInteger(v1)){
                             errorEncontrado();
                             report_error("El identificador "+v1+" es un entero, estas añadiendo un booleano",v2);
                             RESULT = new SymbolAsignaciones();
@@ -332,6 +289,9 @@ Asignaciones ::=
                          }
                     }
                 }
+            :}
+    |Tupla 
+            {:
             :}
         ;
 
@@ -490,11 +450,11 @@ Enters::=
 ID ::= 
     IDENTIFICADOR:v 
             {:
-                if(ts.estaInteger(v)){
-                    int valor = ts.getSymbolValueInteger(v);
+                if(tv.estaInteger(v)){
+                    int valor = tv.getVariableValueInteger(v);
                     RESULT = new SymbolID(valor);
-                }else if (ts.estaBoolean(v)){
-                    boolean valor = ts.getSymbolValueBoolean(v);
+                }else if (tv.estaBoolean(v)){
+                    boolean valor = tv.getVariableValueBoolean(v);
                     RESULT = new SymbolID(valor);
                 }else{
                     errorEncontrado();
