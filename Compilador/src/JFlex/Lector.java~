@@ -9,6 +9,7 @@ import java_cup.runtime.ComplexSymbolFactory.ComplexSymbol;
 import java_cup.runtime.ComplexSymbolFactory.Location;
 
 import CUP.ParserSym;
+import java.util.ArrayList;
 
 
 @SuppressWarnings("fallthrough")
@@ -358,6 +359,21 @@ public class Lector implements java_cup.runtime.Scanner {
   private boolean zzEOFDone;
 
   /* user code: */
+        //Array list que contendrá los simbolos que se han ido analizando
+        private ArrayList<String> sim = new ArrayList<String>();
+        /**
+            Escribimos los datos
+        **/
+        public void printVars(PrintStream out) {
+        if (sim.isEmpty()) {
+            out.println("No se han detectado simbolos");
+        } else {
+            String fmt = "Simbolo-> %s";
+            for(int i =0;i<sim.size();i++){
+                out.println(String.format(fmt, sim.get(i)))
+            }
+        }
+    } 
         /**
          Construccion de un simbolo sin atributo asociado
          **/
@@ -806,7 +822,8 @@ public class Lector implements java_cup.runtime.Scanner {
       else {
         switch (zzAction < 0 ? zzAction : ZZ_ACTION[zzAction]) {
           case 1:
-            { return symbol(ParserSym.error);
+            { sim.add("Desconocido: "+this.yytext());
+                                        return symbol(ParserSym.error);
             }
           // fall through
           case 46: break;
@@ -816,217 +833,262 @@ public class Lector implements java_cup.runtime.Scanner {
           // fall through
           case 47: break;
           case 3:
-            { return symbol(ParserSym.LPARENTESIS);
+            { sim.add("Caracter: PARENTESIS IZQUIERDO");
+                                        return symbol(ParserSym.LPARENTESIS);
             }
           // fall through
           case 48: break;
           case 4:
-            { return symbol(ParserSym.RPARENTESIS);
+            { sim.add("Caracter: PARENTESIS DERECHO");
+                                        return symbol(ParserSym.RPARENTESIS);
             }
           // fall through
           case 49: break;
           case 5:
-            { return symbol(ParserSym.MULTIPLICACION);
+            { sim.add("Operación: MULTIPLICACION");
+                                        return symbol(ParserSym.MULTIPLICACION);
             }
           // fall through
           case 50: break;
           case 6:
-            { return symbol(ParserSym.SUMA);
+            { sim.add("Operación: SUMA");
+                                        return symbol(ParserSym.SUMA);
             }
           // fall through
           case 51: break;
           case 7:
-            { return symbol(ParserSym.COMA);
+            { sim.add("Caracter: COMA");
+                                        return symbol(ParserSym.COMA);
             }
           // fall through
           case 52: break;
           case 8:
-            { return symbol(ParserSym.RESTA);
+            { sim.add("Operación: RESTA");
+                                        return symbol(ParserSym.RESTA);
             }
           // fall through
           case 53: break;
           case 9:
-            { return symbol(ParserSym.DIVISION);
+            { sim.add("Operación: DIVISION");
+                                        return symbol(ParserSym.DIVISION);
             }
           // fall through
           case 54: break;
           case 10:
-            { return symbol(ParserSym.valor, Integer.parseInt(this.yytext()));
+            { Integer aux = Integer.parseInt(this.yytext());
+                                        sim.add("Entero: "+aux);
+                                        return symbol(ParserSym.valor,aux);
             }
           // fall through
           case 55: break;
           case 11:
-            { return symbol(ParserSym.PUNTOCOMA);
+            { sim.add("Caracter: PUNTO Y COMA");
+                                        return symbol(ParserSym.PUNTOCOMA);
             }
           // fall through
           case 56: break;
           case 12:
-            { return symbol(ParserSym.MENOR);
+            { sim.add("Operación: MENOR");
+                                        return symbol(ParserSym.MENOR);
             }
           // fall through
           case 57: break;
           case 13:
-            { return symbol(ParserSym.ASIGNACION);
+            { sim.add("Caracter: ASIGNACION");
+                                        return symbol(ParserSym.ASIGNACION);
             }
           // fall through
           case 58: break;
           case 14:
-            { return symbol(ParserSym.MAYOR);
+            { sim.add("Operación: MAYOR");
+                                        return symbol(ParserSym.MAYOR);
             }
           // fall through
           case 59: break;
           case 15:
-            { return symbol(ParserSym.IDENTIFICADOR, this.yytext());
+            { String aux =this.yytext();
+                                        sim.add("Identificador: "+aux);
+                                        return symbol(ParserSym.IDENTIFICADOR,aux);
             }
           // fall through
           case 60: break;
           case 16:
-            { return symbol(ParserSym.LLLAVE);
+            { sim.add("Caracter: LLAVE IZQUIERDA");
+                                        return symbol(ParserSym.LLLAVE);
             }
           // fall through
           case 61: break;
           case 17:
-            { return symbol(ParserSym.RLLAVE);
+            { sim.add("Caracter: LLAVE DERECHA");
+                                        return symbol(ParserSym.RLLAVE);
             }
           // fall through
           case 62: break;
           case 18:
-            { return symbol(ParserSym.NOEQUIVALENTE);
+            { sim.add("Operación: DISTINTO");
+                                        return symbol(ParserSym.NOEQUIVALENTE);
             }
           // fall through
           case 63: break;
           case 19:
-            { return symbol(ParserSym.MENORIGUAL);
+            { sim.add("Operación: MENOR IGUAL");
+                                        return symbol(ParserSym.MENORIGUAL);
             }
           // fall through
           case 64: break;
           case 20:
-            { return symbol(ParserSym.EQUIVALENTE);
+            { sim.add("Operación: EQUIVALENTE");
+                                        return symbol(ParserSym.EQUIVALENTE);
             }
           // fall through
           case 65: break;
           case 21:
-            { return symbol(ParserSym.MAYORIGUAL);
+            { sim.add("Operación: MAYOR IGUAL");
+                                        return symbol(ParserSym.MAYORIGUAL);
             }
           // fall through
           case 66: break;
           case 22:
-            { return symbol(ParserSym.DO);
+            { sim.add("Palabra Reservada: DO");
+                                        return symbol(ParserSym.DO);
             }
           // fall through
           case 67: break;
           case 23:
-            { return symbol(ParserSym.IF);
+            { sim.add("Palabra Reservada: IF");
+                                        return symbol(ParserSym.IF);
             }
           // fall through
           case 68: break;
           case 24:
-            { return symbol(ParserSym.OR);
+            { sim.add("Operación: OR");
+                                        return symbol(ParserSym.OR);
             }
           // fall through
           case 69: break;
           case 25:
-            { return symbol(ParserSym.AND);
+            { sim.add("Operación: AND");
+                                        return symbol(ParserSym.AND);
             }
           // fall through
           case 70: break;
           case 26:
-            { return symbol(ParserSym.FOR);
+            { sim.add("Palabra Reservada: FOR");
+                                        return symbol(ParserSym.FOR);
             }
           // fall through
           case 71: break;
           case 27:
-            { return symbol(ParserSym.INT);
+            { sim.add("Palabra Reservada: INT");
+                                        return symbol(ParserSym.INT);
             }
           // fall through
           case 72: break;
           case 28:
-            { return symbol(ParserSym.MODULO);
+            { sim.add("Operación: MODULO");
+                                        return symbol(ParserSym.MODULO);
             }
           // fall through
           case 73: break;
           case 29:
-            { return symbol(ParserSym.NOT);
+            { sim.add("Operación: NEGACION");
+                                        return symbol(ParserSym.NOT);
             }
           // fall through
           case 74: break;
           case 30:
-            { return symbol(ParserSym.XOR);
+            { sim.add("Operación: XOR");
+                                        return symbol(ParserSym.XOR);
             }
           // fall through
           case 75: break;
           case 31:
-            { return symbol(ParserSym.ELSE);
+            { sim.add("Palabra Reservada: ELSE");
+                                        return symbol(ParserSym.ELSE);
             }
           // fall through
           case 76: break;
           case 32:
-            { return symbol(ParserSym.FUNT);
+            { sim.add("Palabra Reservada: FUNCION");
+                                        return symbol(ParserSym.FUNT);
             }
           // fall through
           case 77: break;
           case 33:
-            { return symbol(ParserSym.MAIN);
+            { sim.add("Palabra Reservada: MAIN");
+                                        return symbol(ParserSym.MAIN);
             }
           // fall through
           case 78: break;
           case 34:
-            { return symbol(ParserSym.PAIR);
+            { sim.add("Palabra Reservada: TUPLA");
+                                        return symbol(ParserSym.PAIR);
             }
           // fall through
           case 79: break;
           case 35:
-            { return symbol(ParserSym.PROC);
+            { sim.add("Palabra Reservada: PROCEDURE");
+                                        return symbol(ParserSym.PROC);
             }
           // fall through
           case 80: break;
           case 36:
-            { return symbol(ParserSym.TRUE);
+            { sim.add("Boolean: true");
+                                        return symbol(ParserSym.TRUE);
             }
           // fall through
           case 81: break;
           case 37:
-            { return symbol(ParserSym.BREAK);
+            { sim.add("Palabra Reservada: BREAK");
+                                        return symbol(ParserSym.BREAK);
             }
           // fall through
           case 82: break;
           case 38:
-            { return symbol(ParserSym.ENTER);
+            { sim.add("Palabra Reservada: ENTER");
+                                        return symbol(ParserSym.ENTER);
             }
           // fall through
           case 83: break;
           case 39:
-            { return symbol(ParserSym.FALSE);
+            { sim.add("Boolean: false");
+                                        return symbol(ParserSym.FALSE);
             }
           // fall through
           case 84: break;
           case 40:
-            { return symbol(ParserSym.PRINT);
+            { sim.add("Palabra Reservada: PRINT");
+                                        return symbol(ParserSym.PRINT);
             }
           // fall through
           case 85: break;
           case 41:
-            { return symbol(ParserSym.WHILE);
+            { sim.add("Palabra Reservada: WHILE");
+                                        return symbol(ParserSym.WHILE);
             }
           // fall through
           case 86: break;
           case 42:
-            { return symbol(ParserSym.RETURN);
+            { sim.add("Palabra Reservada: RETURN");
+                                        return symbol(ParserSym.RETURN);
             }
           // fall through
           case 87: break;
           case 43:
-            { return symbol(ParserSym.BOOL);
+            { sim.add("Palabra Reservada: BOOLEAN");
+                                        return symbol(ParserSym.BOOL);
             }
           // fall through
           case 88: break;
           case 44:
-            { return symbol(ParserSym.ENTERLN);
+            { sim.add("Palabra Reservada: ENTERLN");
+                                        return symbol(ParserSym.ENTERLN);
             }
           // fall through
           case 89: break;
           case 45:
-            { return symbol(ParserSym.PRINTLN);
+            { sim.add("Palabra Reservada: PRINTLN");
+                                        return symbol(ParserSym.PRINTLN);
             }
           // fall through
           case 90: break;

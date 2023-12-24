@@ -8,19 +8,20 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 
-
-import Symbols.*;
+import TablaSimbolos.*;
+import CodigoTresDirecciones.*;
 import CUP.*;
 
 class Parser;
 
 parser code {:
-    //Tabla de simbolos incorrecta
-    private TablaDeVariables tv = new TablaDeVariables();
+    
+    private TablaDeSimbolos ts = new TablaDeSimbolos();
+    private Generador g = new Generador();
     private int erroresEncontrados = 0;
 
     public void printVars(){
-        tv.printVars(System.out);
+        ts.printVars(System.out);
     }
     /**
     * Nos permite saber si se ha detectado un error:
@@ -111,11 +112,11 @@ non terminal AtributosP;
 
 non terminal Instrucciones;
 
-non terminal SymbolDatos Datos;
+non terminal Integer Datos;
 
 
 non terminal Condicionales;
-non terminal SymbolExpresionesCondicional ExpresionesCondicional;
+non terminal ExpresionesCondicional;
 non terminal Bucles;
 non terminal While;
 non terminal Do;
@@ -127,15 +128,15 @@ non terminal Enters;
 non terminal Asignaciones;
 non terminal Tupla;
 
-non terminal SymbolID ID;
+non terminal TipoDato ID;
 
 non terminal Else;
 
-non terminal SymbolOperaciones Operaciones;
+non terminal TipoDato Operaciones;
 
-non terminal SymbolExpresiones Expresiones;
+non terminal Expresiones;
 
-non terminal SymbolOperacionesAritmeticas OperacionesAritmeticas;
+non terminal OperacionesAritmeticas;
 non terminal Incremento;
 
 
@@ -156,11 +157,14 @@ Bloque ::=
 
 BloqueP ::= 
     Procedimiento   
-            {::}
+            {:
+            :}
     | Funcion       
-            {::}
+            {:
+            :}
     | Main             
-            {::}
+            {:
+            :}
         ;
 
 Procedimiento ::= 
@@ -187,7 +191,9 @@ AtributosP ::=
 
 Main ::= 
     MAIN LLLAVE Instrucciones RLLAVE   
-            {::}
+            {:
+                ts.nuevoBloque(1,"",0);
+            :}
         ;
 
 Instrucciones ::= 
@@ -217,39 +223,34 @@ Asignaciones ::=
             {:
                 if(errorSemantic){
                     errorSemantic = false;
-                    RESULT = new SymbolAsignaciones();
                 }else{
-                    switch((int)v.value){
+                    switch(v){
                         case ParserSym.INT ->{
-                            if (v2.value instanceof Integer){
-                                if((!tv.estaBoolean(v1))&&(!tv.estaInteger(v1))){
-                                    tv.addVariable(v1,(int)v2.value); 
-                                    RESULT = new SymbolAsignaciones((int)v2.value);
+                            if (v2.esEntero()){
+                                if((!ts.consultaEntero(v1))&&(!ts.consultaBoolean(v1))){
+                                    ts.addVariable(v1,0); 
+                                    //código c3@ 
                                 }else{
                                     errorEncontrado();
                                     report_error("El identificador "+v1+" ya se ha definido con anterioridad",v1);
-                                    RESULT = new SymbolAsignaciones();
                                 }
                             }else{
                                 errorEncontrado();
                                 report_error("Se está añadiendo un booleano a un entero",v2);
-                                RESULT = new SymbolAsignaciones();
                             }
                         }
                         case ParserSym.BOOL ->{
-                            if (v2.value instanceof Boolean){
-                                if((!tv.estaBoolean(v1))&&(!tv.estaInteger(v1))){
-                                    tv.addVariable(v1,(boolean)v2.value); 
-                                    RESULT = new SymbolAsignaciones((boolean)v2.value);
+                            if (v2.esBoolean()){
+                                if((!ts.consultaEntero(v1))&&(!ts.consultaBoolean(v1))){
+                                    ts.addVariable(v1,1);
+                                    //código c3@ 
                                 }else{
                                     errorEncontrado();
                                     report_error("El identificador "+v1+" ya se ha definido con anterioridad",v1);
-                                    RESULT = new SymbolAsignaciones();
                                 }
                             }else{
                                 errorEncontrado();
                                 report_error("Se está añadiendo un entero a un booleano",v2);
-                                RESULT = new SymbolAsignaciones();
                             }
                         }
                     }
@@ -259,33 +260,28 @@ Asignaciones ::=
             {: 
                 if(errorSemantic){
                     errorSemantic = false;
-                    RESULT = new SymbolAsignaciones();
                 }else{
-                    if (v2.value instanceof Integer){
-                        if((!tv.estaBoolean(v1))&&(tv.estaInteger(v1))){
-                            tv.addVariable(v1,(int)v2.value); 
-                            RESULT = new SymbolAsignaciones((int)v2.value);
-                         }else if(tv.estaBoolean(v1)){
+                    if (v2.esEntero()){
+                        if((ts.consultaEntero(v1))&&(!ts.consultaBoolean(v1))){
+                            ts.addVariable(v1,0); 
+                            //código c3@
+                        }else if(ts.consultaBoolean(v1)){
                             errorEncontrado();
                             report_error("El identificador "+v1+" es un boolano, estas añadiendo un entero",v2);
-                            RESULT = new SymbolAsignaciones();
-                         }else{
-                                errorEncontrado();
-                                report_error("El identificador "+v1+" ya se ha definido con anterioridad",v1);
-                                RESULT = new SymbolAsignaciones();
+                        }else{
+                            errorEncontrado();
+                            report_error("El identificador "+v1+" ya se ha definido con anterioridad",v1);
                          }
                     }else{
-                        if((tv.estaBoolean(v1))&&(!tv.estaInteger(v1))){
-                            tv.addVariable(v1,(int)v2.value); 
-                            RESULT = new SymbolAsignaciones((int)v2.value);
-                         }else if(tv.estaInteger(v1)){
+                        if((!ts.consultaEntero(v1))&&(ts.consultaBoolean(v1))){
+                            ts.addVariable(v1,1); 
+                            //código c3@
+                         }else if(ts.consultaEntero(v1)){
                             errorEncontrado();
                             report_error("El identificador "+v1+" es un entero, estas añadiendo un booleano",v2);
-                            RESULT = new SymbolAsignaciones();
                          }else{
-                                errorEncontrado();
-                                report_error("El identificador "+v1+" ya se ha definido con anterioridad",v1);
-                                RESULT = new SymbolAsignaciones();
+                            errorEncontrado();
+                            report_error("El identificador "+v1+" ya se ha definido con anterioridad",v1);
                          }
                     }
                 }
@@ -294,7 +290,6 @@ Asignaciones ::=
             {:
             :}
         ;
-
 Tupla::=
     PAIR MENOR Datos COMA Datos MAYOR IDENTIFICADOR ASIGNACION LPARENTESIS Operaciones COMA Operaciones RPARENTESIS PUNTOCOMA
             {:
@@ -309,42 +304,26 @@ Tupla::=
 Datos ::= 
     INT 
             {:
-                RESULT = new SymbolDatos(ParserSym.INT);
+                RESULT = ParserSym.INT;
             :}
     | BOOL 
             {:
-                RESULT = new SymbolDatos(ParserSym.BOOL);
+                RESULT = ParserSym.BOOL;
             :}
         ;
 
 Operaciones::=
-    OperacionesAritmeticas:v
+    OperacionesAritmeticas: v
             {:
-                if(errorSemantic){
-                    RESULT = new SymbolOperaciones();
-                }else{
-                    RESULT = new SymbolOperaciones((int)v.value);
-                }
+                RESULT = new TipoDato(0);
             :}
-    |Expresiones:v
+    |Expresiones: v
             {:
-                if(errorSemantic){
-                    RESULT = new SymbolOperaciones();
-                }else{
-                    RESULT = new SymbolOperaciones((boolean)v.value);
-                }
+                RESULT = new TipoDato(1);
             :}
-    |ID:v
+    |ID: v
             {:
-                if(errorSemantic){
-                    RESULT = new SymbolOperaciones();
-                }else{
-                    if(v.value instanceof Boolean){
-                        RESULT = new SymbolOperaciones((boolean)v.value);
-                    }else{
-                        RESULT = new SymbolOperaciones((int)v.value);
-                    } 
-                }
+                RESULT = v;
             :}
 
         ;
@@ -357,27 +336,11 @@ Condicionales ::=
         ;
 
 ExpresionesCondicional::=
-    Expresiones: v
+    Expresiones
             {:
-                if(errorSemantic){
-                    RESULT = new SymbolExpresionesCondicional();
-                }else{
-                    RESULT = new SymbolExpresionesCondicional((boolean)v.value);
-                } 
             :}
-    |ID: v
-            {:
-                if(errorSemantic){
-                    RESULT = new SymbolExpresionesCondicional();
-                }else{
-                    if(v.value instanceof Boolean){
-                        RESULT = new SymbolExpresionesCondicional((boolean)v.value);
-                    }else{
-                        errorEncontrado();
-                        report_error("Se esperaba un identificador booleano, se ha obtenido un identificador entero: \""+v+"\"", v);
-                        RESULT = new SymbolExpresionesCondicional();
-                    } 
-                } 
+    |ID
+            {: 
             :}
         ;
 
@@ -450,77 +413,224 @@ Enters::=
 ID ::= 
     IDENTIFICADOR:v 
             {:
-                if(tv.estaInteger(v)){
-                    int valor = tv.getVariableValueInteger(v);
-                    RESULT = new SymbolID(valor);
-                }else if (tv.estaBoolean(v)){
-                    boolean valor = tv.getVariableValueBoolean(v);
-                    RESULT = new SymbolID(valor);
-                }else{
+                if(!ts.consultaEntero(v) && !ts.consultaBoolean(v)){
                     errorEncontrado();
                     report_error("Identificador no definido \""+v+"\"", v);
-                    RESULT = new SymbolID();
+                }else{
+                    String destino = g.getVariable();
+                    g.add("ASIG, op1="+v+", op2= ,destino="+destino);
+                    tv.add(new TipoDato(0,destino));
+                    RESULT = ts.getValor(v);
                 }
             :}
-    | valor :v
+    | valor: v
             {:
-                RESULT = new SymbolID(v);
+                RESULT = new TipoDato(0,v,true);
+            :}
+    |TRUE: v
+            {:
+                RESULT = new TipoDato(1,1,true);
+            :}
+    |FALSE
+            {:
+                RESULT = new TipoDato(1,0,true);
             :}
         ;
 Expresiones ::= 
     Operaciones:v1 AND Operaciones:v2      
             {:
-                RESULT = new SymbolExpresiones(v1, ParserSym.AND,v2,parser);
+                if(!v1.esBoolean()){
+                    errorEncontrado();
+                    report_error("Se esperaba un booleano y se ha recibido: \""+v1+"\"", v1);
+                }
+                if(!v2.esBoolean()){
+                    errorEncontrado();
+                    report_error("Se esperaba un boolean y se ha recibido: \""+v2+"\"", v2);
+                }
+                g.generarCodigoOperaciones("AND",v1,v2,false);
             :}
     |Operaciones:v1 OR Operaciones:v2      
             {:
-                RESULT = new SymbolExpresiones(v1, ParserSym.OR,v2,parser);
+                if(!v1.esBoolean()){
+                    errorEncontrado();
+                    report_error("Se esperaba un booleano y se ha recibido: \""+v1+"\"", v1);
+                }
+                if(!v2.esBoolean()){
+                    errorEncontrado();
+                    report_error("Se esperaba un boolean y se ha recibido: \""+v2+"\"", v2);
+                }
+                g.generarCodigoOperaciones("OR",v1,v2,false);
             :}
     |Operaciones:v1 XOR Operaciones:v2     
             {:
-                RESULT = new SymbolExpresiones(v1, ParserSym.XOR,v2,parser);
+                if(!v1.esBoolean()){
+                    errorEncontrado();
+                    report_error("Se esperaba un booleano y se ha recibido: \""+v1+"\"", v1);
+                }
+                if(!v2.esBoolean()){
+                    errorEncontrado();
+                    report_error("Se esperaba un boolean y se ha recibido: \""+v2+"\"", v2);
+                }
+                g.generarCodigoOperaciones("XOR",v1,v2,false);
             :}
     |Operaciones:v1 EQUIVALENTE Operaciones:v2   
             {:
-                RESULT = new SymbolExpresiones(v1, ParserSym.EQUIVALENTE,v2,parser);      
+                if(v1.esBoolean()){
+                    if(!v2.esBoolean()){
+                        errorEncontrado();
+                        report_error("Se esperaba un boolean y se ha recibido: \""+v2+"\"", v2);
+                    }else{
+                        g.generarCodigoOperaciones("EQ",v1,v2,false);
+                    }
+                }else if(v1.esEntero()){
+                    if(!v2.esEntero()){
+                        errorEncontrado();
+                        report_error("Se esperaba un entero y se ha recibido: \""+v2+"\"", v2);
+                    }else{
+                        g.generarCodigoOperaciones("EQ",v1,v2,false);
+                    }
+                }else{
+                    if(!v2.esNull()){
+                        errorEncontrado();
+                        report_error("Se esperaba un null y se ha recibido: \""+v2+"\"", v2);
+                    }else{
+                        g.generarCodigoOperaciones("EQ",v1,v2,false);
+                    }
+                }        
             :}
     |Operaciones:v1 NOEQUIVALENTE Operaciones:v2  
             {:
-                RESULT = new SymbolExpresiones(v1, ParserSym.NOEQUIVALENTE,v2,parser); 
+                if(v1.esBoolean()){
+                    if(!v2.esBoolean()){
+                        errorEncontrado();
+                        report_error("Se esperaba un boolean y se ha recibido: \""+v2+"\"", v2);
+                    }else{
+                        g.generarCodigoOperaciones("NE",v1,v2,false);
+                    }
+                }else if(v1.esEntero()){
+                    if(!v2.esEntero()){
+                        errorEncontrado();
+                        report_error("Se esperaba un entero y se ha recibido: \""+v2+"\"", v2);
+                    }else{
+                        g.generarCodigoOperaciones("NE",v1,v2,false);
+                    }
+                }else{
+                    if(!v2.esNull()){
+                        errorEncontrado();
+                        report_error("Se esperaba un null y se ha recibido: \""+v2+"\"", v2);
+                    }else{
+                        g.generarCodigoOperaciones("NE",v1,v2,false);
+                    }
+                } 
             :}
     |Operaciones:v1 MAYORIGUAL Operaciones:v2    
             {:
-                RESULT = new SymbolExpresiones(v1, ParserSym.MAYORIGUAL,v2,parser);
+                if(v1.esBoolean()){
+                    if(!v2.esBoolean()){
+                        errorEncontrado();
+                        report_error("Se esperaba un boolean y se ha recibido: \""+v2+"\"", v2);
+                    }else{
+                        g.generarCodigoOperaciones("GE",v1,v2,false); 
+                    }
+                }else if(v1.esEntero()){
+                    if(!v2.esEntero()){
+                        errorEncontrado();
+                        report_error("Se esperaba un entero y se ha recibido: \""+v2+"\"", v2);
+                    }else{
+                        g.generarCodigoOperaciones("GE",v1,v2,false); 
+                    }
+                }else{
+                    if(!v2.esNull()){
+                        errorEncontrado();
+                        report_error("Se esperaba un null y se ha recibido: \""+v2+"\"", v2);
+                    }else{
+                        g.generarCodigoOperaciones("GE",v1,v2,false); 
+                    }
+                }
             :}
     |Operaciones:v1 MAYOR Operaciones:v2        
             {:
-                RESULT = new SymbolExpresiones(v1, ParserSym.MAYOR,v2,parser);
+                if(v1.esBoolean()){
+                    if(!v2.esBoolean()){
+                        errorEncontrado();
+                        report_error("Se esperaba un boolean y se ha recibido: \""+v2+"\"", v2);
+                    }else{
+                        g.generarCodigoOperaciones("GT",v1,v2,false);  
+                    }
+                }else if(v1.esEntero()){
+                    if(!v2.esEntero()){
+                        errorEncontrado();
+                        report_error("Se esperaba un entero y se ha recibido: \""+v2+"\"", v2);
+                    }else{
+                        g.generarCodigoOperaciones("GT",v1,v2,false); 
+                    }
+                }else{
+                    if(!v2.esNull()){
+                        errorEncontrado();
+                        report_error("Se esperaba un null y se ha recibido: \""+v2+"\"", v2);
+                    }else{
+                        g.generarCodigoOperaciones("GT",v1,v2,false); 
+                    }
+                }
             :}
     |Operaciones:v1 MENORIGUAL Operaciones:v2   
             {:
-                RESULT = new SymbolExpresiones(v1, ParserSym.MENORIGUAL,v2,parser);
+                if(v1.esBoolean()){
+                    if(!v2.esBoolean()){
+                        errorEncontrado();
+                        report_error("Se esperaba un boolean y se ha recibido: \""+v2+"\"", v2);
+                    }else{
+                        g.generarCodigoOperaciones("LE",v1,v2,false);  
+                    }
+                }else if(v1.esEntero()){
+                    if(!v2.esEntero()){
+                        errorEncontrado();
+                        report_error("Se esperaba un entero y se ha recibido: \""+v2+"\"", v2);
+                    }else{
+                        g.generarCodigoOperaciones("LE",v1,v2,false); 
+                    }
+                }else{
+                    if(!v2.esNull()){
+                        errorEncontrado();
+                        report_error("Se esperaba un null y se ha recibido: \""+v2+"\"", v2);
+                    }else{
+                        g.generarCodigoOperaciones("LE",v1,v2,false); 
+                    }
+                }
             :}
     |Operaciones:v1 MENOR Operaciones:v2      
             {:
-                RESULT = new SymbolExpresiones(v1, ParserSym.MENOR,v2,parser); 
+                if(v1.esBoolean()){
+                    if(!v2.esBoolean()){
+                        errorEncontrado();
+                        report_error("Se esperaba un boolean y se ha recibido: \""+v2+"\"", v2);
+                    }else{
+                        g.generarCodigoOperaciones("LT",v1,v2,false); 
+                    }
+                }else if(v1.esEntero()){
+                    if(!v2.esEntero()){
+                        errorEncontrado();
+                        report_error("Se esperaba un entero y se ha recibido: \""+v2+"\"", v2);
+                    }else{
+                        g.generarCodigoOperaciones("LT",v1,v2,false);  
+                    }
+                }else{
+                    if(!v2.esNull()){
+                        errorEncontrado();
+                        report_error("Se esperaba un null y se ha recibido: \""+v2+"\"", v2);
+                    }else{
+                        g.generarCodigoOperaciones("LT",v1,v2,false);  
+                    }
+                }
             :}
     |NOT Operaciones:v                
             {:
-                if(v.value instanceof Boolean){
-                    RESULT = new SymbolExpresiones(!(boolean)v.value);
+                if(v.esBoolean()){
+                    g.generarCodigoOperacionesNotResta("NOT",v,false);
                 }else{
                     errorEncontrado();
-                    report_error("Se está pasando por parametro un entero cuando debería ser booleano: Valor pasado -> " + v , v);
-                    RESULT = new SymbolExpresiones();
+                    report_error("Se esperaba un boolean y se ha recibido: \""+v+"\"", v);
                 }
-            :}
-    |TRUE
-            {:
-                RESULT = new SymbolExpresiones(true);
-            :}
-    |FALSE
-            {:
-                RESULT = new SymbolExpresiones(false);
             :}
         ;
 
@@ -528,62 +638,71 @@ Expresiones ::=
 OperacionesAritmeticas::= 
     Operaciones:v1 SUMA Operaciones:v2  
             {:
-                if(v1.value instanceof Integer){
-                    RESULT = new SymbolOperacionesAritmeticas((int)v1.value,ParserSym.SUMA, v2,parser);
-                }else{
+                if(!v1.esEntero()){
                     errorEncontrado();
-                    report_error("Se está pasando por parametro booleano cuando debería ser entero: Valor pasado -> " + v1 , v1);
-                    RESULT = new SymbolOperacionesAritmeticas();
+                    report_error("Se esperaba un entero y se ha recibido: \""+v1+"\"", v1);
                 }
+                if(!v2.esEntero()){
+                    errorEncontrado();
+                    report_error("Se esperaba un entero y se ha recibido: \""+v2+"\"", v2);
+                }
+                g.generarCodigoOperaciones("ADD",v1,v2,true);
             :}
     |Operaciones:v1 RESTA Operaciones:v2  
             {:
-                if(v1.value instanceof Integer){
-                    RESULT = new SymbolOperacionesAritmeticas((int)v1.value,ParserSym.RESTA, v2,parser);
-                }else{
+                if(!v1.esEntero()){
                     errorEncontrado();
-                    report_error("Se está pasando por parametro booleano cuando debería ser entero: Valor pasado -> " + v1 , v1);
-                    RESULT = new SymbolOperacionesAritmeticas();
+                    report_error("Se esperaba un entero y se ha recibido: \""+v1+"\"", v1);
                 }
+                if(!v2.esEntero()){
+                    errorEncontrado();
+                    report_error("Se esperaba un entero y se ha recibido: \""+v2+"\"", v2);
+                }
+                g.generarCodigoOperaciones("SUB",v1,v2,true);
             :}
     |Operaciones:v1 MULTIPLICACION Operaciones:v2
             {:
-                if(v1.value instanceof Integer){
-                    RESULT = new SymbolOperacionesAritmeticas((int)v1.value,ParserSym.MULTIPLICACION, v2,parser);
-                }else{
+                if(!v1.esEntero()){
                     errorEncontrado();
-                    report_error("Se está pasando por parametro booleano cuando debería ser entero: Valor pasado -> " + v1 , v1);
-                    RESULT = new SymbolOperacionesAritmeticas();
+                    report_error("Se esperaba un entero y se ha recibido: \""+v1+"\"", v1);
                 }
+                if(!v2.esEntero()){
+                    errorEncontrado();
+                    report_error("Se esperaba un entero y se ha recibido: \""+v2+"\"", v2);
+                }
+                g.generarCodigoOperaciones("MULT",v1,v2,true);
             :}
     |Operaciones:v1 DIVISION Operaciones:v2
             {:
-                if(v1.value instanceof Integer){
-                    RESULT = new SymbolOperacionesAritmeticas((int)v1.value,ParserSym.DIVISION, v2,parser);
-                }else{
+                if(!v1.esEntero()){
                     errorEncontrado();
-                    report_error("Se está pasando por parametro booleano cuando debería ser entero: Valor pasado -> " + v1 , v1);
-                    RESULT = new SymbolOperacionesAritmeticas();
+                    report_error("Se esperaba un entero y se ha recibido: \""+v1+"\"", v1);
                 }
+                if(!v2.esEntero()){
+                    errorEncontrado();
+                    report_error("Se esperaba un entero y se ha recibido: \""+v2+"\"", v2);
+                }
+                g.generarCodigoOperaciones("DIV",v1,v2,true);
             :}
     |Operaciones:v1 MODULO Operaciones:v2
             {:
-                if(v1.value instanceof Integer){
-                    RESULT = new SymbolOperacionesAritmeticas((int)v1.value,ParserSym.MODULO, v2,parser);
-                }else{
+                if(!v1.esEntero()){
                     errorEncontrado();
-                    report_error("Se está pasando por parametro booleano cuando debería ser entero: Valor pasado -> " + v1 , v1);
-                    RESULT = new SymbolOperacionesAritmeticas();
+                    report_error("Se esperaba un entero y se ha recibido: \""+v1+"\"", v1);
                 }
+                if(!v2.esEntero()){
+                    errorEncontrado();
+                    report_error("Se esperaba un entero y se ha recibido: \""+v2+"\"", v2);
+                }
+                g.generarCodigoOperaciones("MOD",v1,v2,true);
             :}
     |RESTA Operaciones:v
             {:
-                if(v.value instanceof Integer){
-                    RESULT = new SymbolOperacionesAritmeticas(-1 * (int)v.value);
-                }else{
+                if(!v.esEntero()){
                     errorEncontrado();
-                    report_error("Se está pasando por parametro booleano cuando debería ser entero: Valor pasado -> " + v , v);
-                    RESULT = new SymbolOperacionesAritmeticas();
+                    report_error("Se esperaba un entero y se ha recibido: \""+v+"\"", v);
+                }else{
+                    g.generarCodigoOperacionesNotResta("NEG",v,true);
                 }
             :}
         ;

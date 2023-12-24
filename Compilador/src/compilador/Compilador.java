@@ -39,6 +39,7 @@ public class Compilador {
                 parser.printVars();
                 in.close();
                 if (parser.getErroresEncontrados() == 0){
+                    scanner.printVars(System.out);
                     //generar codigo sin optimizar EASY
                     //Optimizar código 3 direcciones
                     //generar codigo EASY optimizado

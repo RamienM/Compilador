@@ -5,6 +5,7 @@ import java_cup.runtime.ComplexSymbolFactory.ComplexSymbol;
 import java_cup.runtime.ComplexSymbolFactory.Location;
 
 import CUP.ParserSym;
+import java.util.ArrayList;
 
 %%
 %public                                                     //Será una clase pública
@@ -18,6 +19,21 @@ import CUP.ParserSym;
 
 
 %{
+        //Array list que contendrá los simbolos que se han ido analizando
+        private ArrayList<String> sim = new ArrayList<String>();
+        /**
+            Escribimos los datos
+        **/
+        public void printVars(PrintStream out) {
+        if (sim.isEmpty()) {
+            out.println("No se han detectado simbolos");
+        } else {
+            String fmt = "Simbolo-> %s";
+            for(int i =0;i<sim.size();i++){
+                out.println(String.format(fmt, sim.get(i)));
+            }
+        }
+    } 
         /**
          Construccion de un simbolo sin atributo asociado
          **/
@@ -135,67 +151,197 @@ blockcomment = \/\*({character}|{digit}|{space})*\*\/
 //Reglas
 
         //tipo de datos
-        {integer}                      { return symbol(ParserSym.valor, Integer.parseInt(this.yytext())); }
-        {booleanTrue}                  { return symbol(ParserSym.TRUE); }
-        {booleanFalse}                 { return symbol(ParserSym.FALSE); }
+        {integer}                      { 
+                                        Integer aux = Integer.parseInt(this.yytext());
+                                        sim.add("Entero: "+aux);
+                                        return symbol(ParserSym.valor,aux); 
+                                       }
+        {booleanTrue}                  { 
+                                        sim.add("Boolean: true");
+                                        return symbol(ParserSym.TRUE); 
+                                        }
+        {booleanFalse}                 { 
+                                        sim.add("Boolean: false");
+                                        return symbol(ParserSym.FALSE); 
+                                        }
 
         //Operadores
         //--Aritmeticos
-        {op_suma}                      { return symbol(ParserSym.SUMA); }
-        {op_resta}                     { return symbol(ParserSym.RESTA); }
-        {op_mult}                      { return symbol(ParserSym.MULTIPLICACION); }
-        {op_div}                       { return symbol(ParserSym.DIVISION); }
-        {op_mod}                       { return symbol(ParserSym.MODULO); }
+        {op_suma}                      { 
+                                        sim.add("Operación: SUMA");
+                                        return symbol(ParserSym.SUMA); 
+                                       }
+        {op_resta}                     { 
+                                        sim.add("Operación: RESTA");
+                                        return symbol(ParserSym.RESTA); 
+                                       }
+        {op_mult}                      { 
+                                        sim.add("Operación: MULTIPLICACION");
+                                        return symbol(ParserSym.MULTIPLICACION); 
+                                       }
+        {op_div}                       { 
+                                        sim.add("Operación: DIVISION");
+                                        return symbol(ParserSym.DIVISION); 
+                                       }
+        {op_mod}                       { 
+                                        sim.add("Operación: MODULO");
+                                        return symbol(ParserSym.MODULO); 
+                                       }
         //--Relacionales
-        {op_comp_equal}                { return symbol(ParserSym.EQUIVALENTE); }
-        {op_menorigual}                { return symbol(ParserSym.MENORIGUAL); }
-        {op_mayorigual}                { return symbol(ParserSym.MAYORIGUAL); }
-        {op_mayor}                     { return symbol(ParserSym.MAYOR); }
-        {op_menor}                     { return symbol(ParserSym.MENOR); }
-        {op_comp_not_equal}            { return symbol(ParserSym.NOEQUIVALENTE); }
+        {op_comp_equal}                { 
+                                        sim.add("Operación: EQUIVALENTE");
+                                        return symbol(ParserSym.EQUIVALENTE); 
+                                       }
+        {op_menorigual}                {
+                                        sim.add("Operación: MENOR IGUAL");
+                                        return symbol(ParserSym.MENORIGUAL); 
+                                       }
+        {op_mayorigual}                {
+                                        sim.add("Operación: MAYOR IGUAL");
+                                        return symbol(ParserSym.MAYORIGUAL); 
+                                       }
+        {op_mayor}                     { 
+                                        sim.add("Operación: MAYOR");
+                                        return symbol(ParserSym.MAYOR); 
+                                       }
+        {op_menor}                     { 
+                                        sim.add("Operación: MENOR");
+                                        return symbol(ParserSym.MENOR); 
+                                       }
+        {op_comp_not_equal}            {
+                                        sim.add("Operación: DISTINTO");
+                                        return symbol(ParserSym.NOEQUIVALENTE); 
+                                       }
         //--Lógicos
-        {op_and}                       { return symbol(ParserSym.AND); }
-        {op_or}                        { return symbol(ParserSym.OR); }
-        {op_xor}                       { return symbol(ParserSym.XOR); }
-        {op_not}                       { return symbol(ParserSym.NOT); }
+        {op_and}                       { 
+                                        sim.add("Operación: AND");
+                                        return symbol(ParserSym.AND); 
+                                       }
+        {op_or}                        {
+                                        sim.add("Operación: OR");
+                                        return symbol(ParserSym.OR); 
+                                        }
+        {op_xor}                       {
+                                        sim.add("Operación: XOR");
+                                        return symbol(ParserSym.XOR); 
+                                        }
+        {op_not}                       {
+                                        sim.add("Operación: NEGACION");
+                                        return symbol(ParserSym.NOT); 
+                                        }
 
         //Parentesis
-        {parentesis_l}                 { return symbol(ParserSym.LPARENTESIS); }
-        {parentesis_r}                 { return symbol(ParserSym.RPARENTESIS); }
-        {llave_l}                      { return symbol(ParserSym.LLLAVE); }
-        {llave_r}                      { return symbol(ParserSym.RLLAVE); }
+        {parentesis_l}                 {
+                                        sim.add("Caracter: PARENTESIS IZQUIERDO");
+                                        return symbol(ParserSym.LPARENTESIS); 
+                                        }
+        {parentesis_r}                 { 
+                                        sim.add("Caracter: PARENTESIS DERECHO");
+                                        return symbol(ParserSym.RPARENTESIS); 
+                                       }
+        {llave_l}                      {
+                                        sim.add("Caracter: LLAVE IZQUIERDA");
+                                        return symbol(ParserSym.LLLAVE); 
+                                       }
+        {llave_r}                      {
+                                        sim.add("Caracter: LLAVE DERECHA");
+                                        return symbol(ParserSym.RLLAVE); 
+                                       }
 
         //Puntos y comas
-        {punto_coma}                   { return symbol(ParserSym.PUNTOCOMA); }
-        {coma}                         { return symbol(ParserSym.COMA); }
+        {punto_coma}                   {
+                                        sim.add("Caracter: PUNTO Y COMA");
+                                        return symbol(ParserSym.PUNTOCOMA); 
+                                       }
+        {coma}                         { 
+                                        sim.add("Caracter: COMA");
+                                        return symbol(ParserSym.COMA); 
+                                       }
 
         //Asignación
-        {asignacion}                   { return symbol(ParserSym.ASIGNACION); }
+        {asignacion}                   { 
+                                        sim.add("Caracter: ASIGNACION");
+                                        return symbol(ParserSym.ASIGNACION); 
+                                       }
 
         //Condicionales
-        {cond_if}                      { return symbol(ParserSym.IF); }
-        {cond_else}                    { return symbol(ParserSym.ELSE); }
+        {cond_if}                      { 
+                                        sim.add("Palabra Reservada: IF");
+                                        return symbol(ParserSym.IF); 
+                                       }
+        {cond_else}                    { 
+                                        sim.add("Palabra Reservada: ELSE");
+                                        return symbol(ParserSym.ELSE); 
+                                       }
         //Bucles
-        {cond_while}                   { return symbol(ParserSym.WHILE); }
-        {cond_for}                     { return symbol(ParserSym.FOR); }
-        {cond_do}                      { return symbol(ParserSym.DO); }
+        {cond_while}                   { 
+                                        sim.add("Palabra Reservada: WHILE");
+                                        return symbol(ParserSym.WHILE); 
+                                       }
+        {cond_for}                     { 
+                                        sim.add("Palabra Reservada: FOR");
+                                        return symbol(ParserSym.FOR); 
+                                       }
+        {cond_do}                      {    
+                                        sim.add("Palabra Reservada: DO");
+                                        return symbol(ParserSym.DO); 
+                                       }
 
 
         //Palabras reservadas
-        //{res_null}                     { return symbol(ParserSym.NULL); }
-        {res_break}                    { return symbol(ParserSym.BREAK); }
-        {res_return}                   { return symbol(ParserSym.RETURN); }
-        {res_print}                    { return symbol(ParserSym.PRINT); }
-        {res_println}                  { return symbol(ParserSym.PRINTLN); }
-        {res_enter}                    { return symbol(ParserSym.ENTER); }
-        {res_enterln}                  { return symbol(ParserSym.ENTERLN); }
-        {res_main}                     { return symbol(ParserSym.MAIN); }
-        {res_procedimiento}            { return symbol(ParserSym.PROC); }
-        {res_funcion}                  { return symbol(ParserSym.FUNT); }
+        //{res_null}                   {
+        //                              sim.add("Palabra Reservada: NULL");
+        //                              return symbol(ParserSym.NULL); 
+        //                             }
+        {res_break}                    { 
+                                        sim.add("Palabra Reservada: BREAK");
+                                        return symbol(ParserSym.BREAK); 
+                                       }
+        {res_return}                   { 
+                                        sim.add("Palabra Reservada: RETURN");
+                                        return symbol(ParserSym.RETURN); 
+                                       }
+        {res_print}                    { 
+                                        sim.add("Palabra Reservada: PRINT");
+                                        return symbol(ParserSym.PRINT); 
+                                       }
+        {res_println}                  {
+                                        sim.add("Palabra Reservada: PRINTLN");
+                                        return symbol(ParserSym.PRINTLN); 
+                                       }
+        {res_enter}                    { 
+                                        sim.add("Palabra Reservada: ENTER");
+                                        return symbol(ParserSym.ENTER); 
+                                       }
+        {res_enterln}                  { 
+                                        sim.add("Palabra Reservada: ENTERLN");
+                                        return symbol(ParserSym.ENTERLN); 
+                                       }
+        {res_main}                     { 
+                                        sim.add("Palabra Reservada: MAIN");
+                                        return symbol(ParserSym.MAIN); 
+                                       }
+        {res_procedimiento}            { 
+                                        sim.add("Palabra Reservada: PROCEDURE");
+                                        return symbol(ParserSym.PROC); 
+                                       }
+        {res_funcion}                  { 
+                                        sim.add("Palabra Reservada: FUNCION");
+                                        return symbol(ParserSym.FUNT); 
+                                       }
         //--Tipo de datos
-        {int}                          { return symbol(ParserSym.INT); }
-        {bool}                         { return symbol(ParserSym.BOOL); }
-        {tupla}                        { return symbol(ParserSym.PAIR); }
+        {int}                          { 
+                                        sim.add("Palabra Reservada: INT");
+                                        return symbol(ParserSym.INT); 
+                                       }
+        {bool}                         { 
+                                        sim.add("Palabra Reservada: BOOLEAN");
+                                        return symbol(ParserSym.BOOL); 
+                                       }
+        {tupla}                        { 
+                                        sim.add("Palabra Reservada: TUPLA");
+                                        return symbol(ParserSym.PAIR); 
+                                       }
 
         //Comentarios
         {linecomment}                  {/*Ignore*/}
@@ -203,6 +349,13 @@ blockcomment = \/\*({character}|{digit}|{space})*\*\/
         //Espacios
         {space}                        {/*Ignore*/}
         //Identificadores
-        {id}                           { return symbol(ParserSym.IDENTIFICADOR, this.yytext()); }
+        {id}                           { 
+                                        String aux =this.yytext();
+                                        sim.add("Identificador: "+aux);
+                                        return symbol(ParserSym.IDENTIFICADOR,aux); 
+                                       }
 
-        [^]                            { return symbol(ParserSym.error);}
+        [^]                            { 
+                                        sim.add("Desconocido: "+this.yytext());
+                                        return symbol(ParserSym.error);
+                                       }
