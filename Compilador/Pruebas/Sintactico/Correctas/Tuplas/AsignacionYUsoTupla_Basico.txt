@@ -1,0 +1,13 @@
+main{
+	pair <int,int> a = (4,5);
+	pair <int,boolean> b = (4,true);
+	pair <int,boolean> c =(2+2,5==5);
+
+	int d = a.fst;
+	int e = a.snd;
+	
+	a.fst = e;
+	a.snd = d;
+	
+	b = (a.snd,c.snd);
+}

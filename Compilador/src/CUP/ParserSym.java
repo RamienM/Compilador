@@ -12,6 +12,7 @@ public class ParserSym {
   public static final int XOR = 17;
   public static final int RESTA = 5;
   public static final int INT = 33;
+  public static final int SND = 46;
   public static final int PRINTLN = 40;
   public static final int PUNTOCOMA = 24;
   public static final int NOEQUIVALENTE = 14;
@@ -47,6 +48,7 @@ public class ParserSym {
   public static final int WHILE = 28;
   public static final int PROC = 36;
   public static final int FALSE = 44;
+  public static final int FST = 45;
   public static final int DIVISION = 7;
   public static final int PRINT = 39;
   public static final int EQUIVALENTE = 9;
@@ -98,7 +100,9 @@ public class ParserSym {
   "ENTER",
   "ENTERLN",
   "TRUE",
-  "FALSE"
+  "FALSE",
+  "FST",
+  "SND"
   };
 }
 

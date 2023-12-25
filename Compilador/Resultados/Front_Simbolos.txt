@@ -2,5 +2,8 @@ MAIN
 	VARIABLE: a,tipo: INT,nivel: 1
 	VARIABLE: b,tipo: INT,nivel: 1
 	VARIABLE: c,tipo: INT,nivel: 1
+	VARIABLE: a-1,tipo: INT,nivel: 1
 	VARIABLE: d,tipo: INT,nivel: 1
 	VARIABLE: e,tipo: INT,nivel: 1
+	VARIABLE: c-1,tipo: BOOL,nivel: 1
+	VARIABLE: b-1,tipo: BOOL,nivel: 1

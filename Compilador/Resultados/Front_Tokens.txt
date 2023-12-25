@@ -1,48 +1,81 @@
 Simbolo-> Palabra Reservada: MAIN
 Simbolo-> Caracter: LLAVE IZQUIERDA
+Simbolo-> Palabra Reservada: TUPLA
+Simbolo-> Operación: MENOR
 Simbolo-> Palabra Reservada: INT
+Simbolo-> Caracter: COMA
+Simbolo-> Palabra Reservada: INT
+Simbolo-> Operación: MAYOR
 Simbolo-> Identificador: a
 Simbolo-> Caracter: ASIGNACION
-Simbolo-> Entero: 10
-Simbolo-> Operación: MULTIPLICACION
-Simbolo-> Entero: 20
-Simbolo-> Operación: SUMA
-Simbolo-> Entero: 40
-Simbolo-> Operación: DIVISION
-Simbolo-> Entero: 2
+Simbolo-> Caracter: PARENTESIS IZQUIERDO
+Simbolo-> Entero: 4
+Simbolo-> Caracter: COMA
+Simbolo-> Entero: 5
+Simbolo-> Caracter: PARENTESIS DERECHO
 Simbolo-> Caracter: PUNTO Y COMA
+Simbolo-> Palabra Reservada: TUPLA
+Simbolo-> Operación: MENOR
 Simbolo-> Palabra Reservada: INT
+Simbolo-> Caracter: COMA
+Simbolo-> Palabra Reservada: BOOLEAN
+Simbolo-> Operación: MAYOR
 Simbolo-> Identificador: b
 Simbolo-> Caracter: ASIGNACION
-Simbolo-> Entero: 10
-Simbolo-> Operación: SUMA
-Simbolo-> Entero: 2
-Simbolo-> Operación: MULTIPLICACION
-Simbolo-> Identificador: a
+Simbolo-> Caracter: PARENTESIS IZQUIERDO
+Simbolo-> Entero: 4
+Simbolo-> Caracter: COMA
+Simbolo-> Boolean: true
+Simbolo-> Caracter: PARENTESIS DERECHO
 Simbolo-> Caracter: PUNTO Y COMA
+Simbolo-> Palabra Reservada: TUPLA
+Simbolo-> Operación: MENOR
 Simbolo-> Palabra Reservada: INT
+Simbolo-> Caracter: COMA
+Simbolo-> Palabra Reservada: BOOLEAN
+Simbolo-> Operación: MAYOR
 Simbolo-> Identificador: c
 Simbolo-> Caracter: ASIGNACION
-Simbolo-> Identificador: b
-Simbolo-> Operación: RESTA
-Simbolo-> Entero: 6
+Simbolo-> Caracter: PARENTESIS IZQUIERDO
+Simbolo-> Entero: 2
+Simbolo-> Operación: SUMA
+Simbolo-> Entero: 2
+Simbolo-> Caracter: COMA
+Simbolo-> Entero: 5
+Simbolo-> Operación: EQUIVALENTE
+Simbolo-> Entero: 5
+Simbolo-> Caracter: PARENTESIS DERECHO
 Simbolo-> Caracter: PUNTO Y COMA
 Simbolo-> Palabra Reservada: INT
 Simbolo-> Identificador: d
 Simbolo-> Caracter: ASIGNACION
-Simbolo-> Entero: 1
-Simbolo-> Operación: MULTIPLICACION
-Simbolo-> Entero: 1
-Simbolo-> Operación: DIVISION
-Simbolo-> Entero: 1
-Simbolo-> Operación: SUMA
-Simbolo-> Entero: 1
+Simbolo-> Identificador: a
+Simbolo-> Palabra Reservada TUPLA: FST
 Simbolo-> Caracter: PUNTO Y COMA
 Simbolo-> Palabra Reservada: INT
 Simbolo-> Identificador: e
 Simbolo-> Caracter: ASIGNACION
-Simbolo-> Identificador: c
-Simbolo-> Operación: MODULO
+Simbolo-> Identificador: a
+Simbolo-> Palabra Reservada TUPLA: SND
+Simbolo-> Caracter: PUNTO Y COMA
+Simbolo-> Identificador: a
+Simbolo-> Palabra Reservada TUPLA: FST
+Simbolo-> Caracter: ASIGNACION
+Simbolo-> Identificador: e
+Simbolo-> Caracter: PUNTO Y COMA
+Simbolo-> Identificador: a
+Simbolo-> Palabra Reservada TUPLA: SND
+Simbolo-> Caracter: ASIGNACION
 Simbolo-> Identificador: d
+Simbolo-> Caracter: PUNTO Y COMA
+Simbolo-> Identificador: b
+Simbolo-> Caracter: ASIGNACION
+Simbolo-> Caracter: PARENTESIS IZQUIERDO
+Simbolo-> Identificador: a
+Simbolo-> Palabra Reservada TUPLA: SND
+Simbolo-> Caracter: COMA
+Simbolo-> Identificador: c
+Simbolo-> Palabra Reservada TUPLA: SND
+Simbolo-> Caracter: PARENTESIS DERECHO
 Simbolo-> Caracter: PUNTO Y COMA
 Simbolo-> Caracter: LLAVE DERECHA

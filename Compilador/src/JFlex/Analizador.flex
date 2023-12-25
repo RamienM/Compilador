@@ -130,6 +130,8 @@ res_enterln = enterln
 res_main = main
 res_procedimiento = proc
 res_funcion = funt
+res_first = \.fst
+res_second = \.snd
 //--Tipo de Datos
 int = int
 bool = boolean
@@ -328,6 +330,14 @@ blockcomment = \/\*({character}|{digit}|{space})*\*\/
         {res_funcion}                  { 
                                         sim.add("Palabra Reservada: FUNCION");
                                         return symbol(ParserSym.FUNT); 
+                                       }
+        {res_first}                    {
+                                        sim.add("Palabra Reservada TUPLA: FST");
+                                        return symbol(ParserSym.FST);
+                                       }
+        {res_second}                    {
+                                        sim.add("Palabra Reservada TUPLA: SND");
+                                        return symbol(ParserSym.SND);
                                        }
         //--Tipo de datos
         {int}                          { 

@@ -47,7 +47,7 @@ public class Compilador {
                 Parser parser = new Parser(scanner, sf);
                 parser.parse();
                 in.close();
-                if (parser.getErroresEncontrados() == 0){
+                //if (parser.getErroresEncontrados() == 0){
                     //Escritura del Léxico
                     scanner.printVars(new PrintStream(new FileOutputStream(new File(gLexico))));
                     //Escritura de los Simbolos
@@ -59,7 +59,7 @@ public class Compilador {
                     //generar codigo sin optimizar EASY
                     //Optimizar código 3 direcciones
                     //generar codigo EASY optimizado
-                }
+                //}
             } catch (FileNotFoundException e) {
                 System.out.println("El fichero introducido no existe");
             } catch (IOException e) {

@@ -68,7 +68,7 @@ public class TablaDeVariables {
         tvariables.put(id,new TipoDato(tipo,null,true));
     }
     
-    public TipoDato getValorEntero(String id){
+    public TipoDato getValor(String id){
         return tvariables.get(id);
     }
     

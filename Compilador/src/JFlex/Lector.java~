@@ -370,7 +370,7 @@ public class Lector implements java_cup.runtime.Scanner {
         } else {
             String fmt = "Simbolo-> %s";
             for(int i =0;i<sim.size();i++){
-                out.println(String.format(fmt, sim.get(i)))
+                out.println(String.format(fmt, sim.get(i)));
             }
         }
     } 

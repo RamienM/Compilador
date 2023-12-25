@@ -85,9 +85,15 @@ public class TablaDeSimbolos {
     public boolean consultaBoolean(String indentificador){
         TablaDeVariables auxT = ta.get(nivel);
         if(!auxT.estaVariable(indentificador)) return false;
-        return auxT.esInteger(indentificador);
+        return auxT.esBoolean(indentificador);
     }
     
+    public boolean consultaTupla(String indentificador){
+        TablaDeVariables auxT = ta.get(nivel);
+        return auxT.estaVariable(indentificador);
+    }
+    
+    //--------------------PRINT-------------------------------------------------
     public void printVars(PrintStream out) {
         if (ta.isEmpty()) {
             out.println("No hi ha variables declarades");
@@ -102,8 +108,9 @@ public class TablaDeSimbolos {
     //-------------------Funciones obtencion valores----------------------------
     public TipoDato getValor(String id){
         TablaDeVariables auxT = ta.get(nivel);
-        return auxT.getValorEntero(id);
+        return auxT.getValor(id);
     }
+    
     public int getNivel(){
         return nivel;
     }
