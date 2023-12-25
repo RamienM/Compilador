@@ -7,8 +7,11 @@ package compilador;
 import java.io.FileReader;
 import JFlex.Lector;
 import CUP.Parser;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java_cup.runtime.ComplexSymbolFactory;
 import java_cup.runtime.SymbolFactory;
 import javax.swing.JFileChooser;
@@ -20,6 +23,13 @@ import javax.swing.filechooser.FileNameExtensionFilter;
  */
 public class Compilador {
 
+    private static final String gLexico = "Resultados/Front_Tokens.txt";
+    private static final String gSimbolos = "Resultados/Front_Simbolos.txt";
+    private static final String gErrores = "Resultados/Errores.txt";
+    private static final String gVariables = "Resultados/Back_Variables.txt";
+    private static final String gIntermedio = "Resultados/Back-CodigoTresDirecciones.txt";
+    private static final String gEnsamblador = "Resultados/Back-Ensamblador.txt";
+    private static final String gEnsambladorO = "Resultados/Back-Ensamblador_Optimizado.txt";
     /**
      * @param args the command line arguments
      */
@@ -36,10 +46,16 @@ public class Compilador {
                 SymbolFactory sf = new ComplexSymbolFactory();
                 Parser parser = new Parser(scanner, sf);
                 parser.parse();
-                parser.printVars();
                 in.close();
                 if (parser.getErroresEncontrados() == 0){
-                    scanner.printVars(System.out);
+                    //Escritura del Léxico
+                    scanner.printVars(new PrintStream(new FileOutputStream(new File(gLexico))));
+                    //Escritura de los Simbolos
+                    parser.printVarsSimbolos(new PrintStream(new FileOutputStream(new File(gSimbolos))));
+                    //Escrituras Variables BACK
+                    parser.printVarsVariables(new PrintStream(new FileOutputStream(new File(gVariables))));
+                    //Escritura Codigo tres direcciones
+                    parser.printVarsCodigo(new PrintStream(new FileOutputStream(new File(gIntermedio))));
                     //generar codigo sin optimizar EASY
                     //Optimizar código 3 direcciones
                     //generar codigo EASY optimizado

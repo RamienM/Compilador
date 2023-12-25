@@ -11,6 +11,7 @@ import java_cup.runtime.*;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintStream;
 import TablaSimbolos.*;
 import CodigoTresDirecciones.*;
 import CUP.*;
@@ -463,11 +464,16 @@ public class Parser extends java_cup.runtime.lr_parser {
     
     private TablaDeSimbolos ts = new TablaDeSimbolos();
     private Generador g = new Generador();
-    private TablaVariables3D tv = new TablaVariables3D();
     private int erroresEncontrados = 0;
 
-    public void printVars(){
-        ts.printVars(System.out);
+    public void printVarsSimbolos(PrintStream out){
+        ts.printVars(out);
+    }
+    public void printVarsCodigo(PrintStream out){
+        g.printVarsCodigo(out);
+    }
+    public void printVarsVariables(PrintStream out){
+        g.printVarsVariables(out);
     }
     /**
     * Nos permite saber si se ha detectado un error:
@@ -756,7 +762,7 @@ class CUP$Parser$actions {
                             if (v2.esEntero()){
                                 if((!ts.consultaEntero(v1))&&(!ts.consultaBoolean(v1))){
                                     ts.addVariable(v1,0); 
-                                    //código c3@ 
+                                    g.generarCodigoAsignación(v2,v1,0);
                                 }else{
                                     errorEncontrado();
                                     report_error("El identificador "+v1+" ya se ha definido con anterioridad",v1);
@@ -770,7 +776,7 @@ class CUP$Parser$actions {
                             if (v2.esBoolean()){
                                 if((!ts.consultaEntero(v1))&&(!ts.consultaBoolean(v1))){
                                     ts.addVariable(v1,1);
-                                    //código c3@ 
+                                    g.generarCodigoAsignación(v2,v1,1);
                                 }else{
                                     errorEncontrado();
                                     report_error("El identificador "+v1+" ya se ha definido con anterioridad",v1);
@@ -804,7 +810,7 @@ class CUP$Parser$actions {
                     if (v2.esEntero()){
                         if((ts.consultaEntero(v1))&&(!ts.consultaBoolean(v1))){
                             ts.addVariable(v1,0); 
-                            //código c3@
+                            g.generarCodigoAsignación(v2,v1,0);
                         }else if(ts.consultaBoolean(v1)){
                             errorEncontrado();
                             report_error("El identificador "+v1+" es un boolano, estas añadiendo un entero",v2);
@@ -815,7 +821,7 @@ class CUP$Parser$actions {
                     }else{
                         if((!ts.consultaEntero(v1))&&(ts.consultaBoolean(v1))){
                             ts.addVariable(v1,1); 
-                            //código c3@
+                            g.generarCodigoAsignación(v2,v1,1);
                          }else if(ts.consultaEntero(v1)){
                             errorEncontrado();
                             report_error("El identificador "+v1+" es un entero, estas añadiendo un booleano",v2);
@@ -889,9 +895,9 @@ class CUP$Parser$actions {
               TipoDato RESULT =null;
 		int vleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int vright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
-		Object v = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
+		TipoDato v = (TipoDato)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
 		
-                RESULT = new TipoDato(0);
+                RESULT = v;
             
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("Operaciones",22, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -903,9 +909,9 @@ class CUP$Parser$actions {
               TipoDato RESULT =null;
 		int vleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int vright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
-		Object v = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
+		TipoDato v = (TipoDato)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
 		
-                RESULT = new TipoDato(1);
+                RESULT = v;
             
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("Operaciones",22, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -1115,9 +1121,7 @@ class CUP$Parser$actions {
                     errorEncontrado();
                     report_error("Identificador no definido \""+v+"\"", v);
                 }else{
-                    String destino = g.getVariable();
-                    g.add("ASIG, op1="+v+", op2= ,destino="+destino);
-                    tv.add(new TipoDato(0,destino));
+                    g.generarCodigoIdentificador(v);
                     RESULT = ts.getValor(v);
                 }
             
@@ -1167,7 +1171,7 @@ class CUP$Parser$actions {
           /*. . . . . . . . . . . . . . . . . . . .*/
           case 50: // Expresiones ::= Operaciones AND Operaciones 
             {
-              Object RESULT =null;
+              TipoDato RESULT =null;
 		int v1left = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).left;
 		int v1right = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).right;
 		TipoDato v1 = (TipoDato)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-2)).value;
@@ -1183,7 +1187,7 @@ class CUP$Parser$actions {
                     errorEncontrado();
                     report_error("Se esperaba un boolean y se ha recibido: \""+v2+"\"", v2);
                 }
-                //codigo c3@
+                RESULT=g.generarCodigoOperaciones("AND",v1,v2,false);
             
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("Expresiones",23, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -1192,7 +1196,7 @@ class CUP$Parser$actions {
           /*. . . . . . . . . . . . . . . . . . . .*/
           case 51: // Expresiones ::= Operaciones OR Operaciones 
             {
-              Object RESULT =null;
+              TipoDato RESULT =null;
 		int v1left = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).left;
 		int v1right = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).right;
 		TipoDato v1 = (TipoDato)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-2)).value;
@@ -1208,7 +1212,7 @@ class CUP$Parser$actions {
                     errorEncontrado();
                     report_error("Se esperaba un boolean y se ha recibido: \""+v2+"\"", v2);
                 }
-                //codigo c3@
+                RESULT=g.generarCodigoOperaciones("OR",v1,v2,false);
             
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("Expresiones",23, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -1217,7 +1221,7 @@ class CUP$Parser$actions {
           /*. . . . . . . . . . . . . . . . . . . .*/
           case 52: // Expresiones ::= Operaciones XOR Operaciones 
             {
-              Object RESULT =null;
+              TipoDato RESULT =null;
 		int v1left = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).left;
 		int v1right = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).right;
 		TipoDato v1 = (TipoDato)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-2)).value;
@@ -1233,7 +1237,7 @@ class CUP$Parser$actions {
                     errorEncontrado();
                     report_error("Se esperaba un boolean y se ha recibido: \""+v2+"\"", v2);
                 }
-                //codigo c3@
+                RESULT=g.generarCodigoOperaciones("XOR",v1,v2,false);
             
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("Expresiones",23, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -1242,7 +1246,7 @@ class CUP$Parser$actions {
           /*. . . . . . . . . . . . . . . . . . . .*/
           case 53: // Expresiones ::= Operaciones EQUIVALENTE Operaciones 
             {
-              Object RESULT =null;
+              TipoDato RESULT =null;
 		int v1left = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).left;
 		int v1right = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).right;
 		TipoDato v1 = (TipoDato)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-2)).value;
@@ -1255,21 +1259,21 @@ class CUP$Parser$actions {
                         errorEncontrado();
                         report_error("Se esperaba un boolean y se ha recibido: \""+v2+"\"", v2);
                     }else{
-                        //codigo c3@ 
+                        RESULT=g.generarCodigoOperaciones("EQ",v1,v2,false);
                     }
                 }else if(v1.esEntero()){
                     if(!v2.esEntero()){
                         errorEncontrado();
                         report_error("Se esperaba un entero y se ha recibido: \""+v2+"\"", v2);
                     }else{
-                        //codigo c3@ 
+                        RESULT=g.generarCodigoOperaciones("EQ",v1,v2,false);
                     }
                 }else{
                     if(!v2.esNull()){
                         errorEncontrado();
                         report_error("Se esperaba un null y se ha recibido: \""+v2+"\"", v2);
                     }else{
-                        //codigo c3@ 
+                        RESULT=g.generarCodigoOperaciones("EQ",v1,v2,false);
                     }
                 }        
             
@@ -1280,7 +1284,7 @@ class CUP$Parser$actions {
           /*. . . . . . . . . . . . . . . . . . . .*/
           case 54: // Expresiones ::= Operaciones NOEQUIVALENTE Operaciones 
             {
-              Object RESULT =null;
+              TipoDato RESULT =null;
 		int v1left = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).left;
 		int v1right = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).right;
 		TipoDato v1 = (TipoDato)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-2)).value;
@@ -1293,21 +1297,21 @@ class CUP$Parser$actions {
                         errorEncontrado();
                         report_error("Se esperaba un boolean y se ha recibido: \""+v2+"\"", v2);
                     }else{
-                        //codigo c3@ 
+                        RESULT=g.generarCodigoOperaciones("NE",v1,v2,false);
                     }
                 }else if(v1.esEntero()){
                     if(!v2.esEntero()){
                         errorEncontrado();
                         report_error("Se esperaba un entero y se ha recibido: \""+v2+"\"", v2);
                     }else{
-                        //codigo c3@ 
+                        RESULT=g.generarCodigoOperaciones("NE",v1,v2,false);
                     }
                 }else{
                     if(!v2.esNull()){
                         errorEncontrado();
                         report_error("Se esperaba un null y se ha recibido: \""+v2+"\"", v2);
                     }else{
-                        //codigo c3@ 
+                        RESULT=g.generarCodigoOperaciones("NE",v1,v2,false);
                     }
                 } 
             
@@ -1318,7 +1322,7 @@ class CUP$Parser$actions {
           /*. . . . . . . . . . . . . . . . . . . .*/
           case 55: // Expresiones ::= Operaciones MAYORIGUAL Operaciones 
             {
-              Object RESULT =null;
+              TipoDato RESULT =null;
 		int v1left = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).left;
 		int v1right = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).right;
 		TipoDato v1 = (TipoDato)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-2)).value;
@@ -1331,21 +1335,21 @@ class CUP$Parser$actions {
                         errorEncontrado();
                         report_error("Se esperaba un boolean y se ha recibido: \""+v2+"\"", v2);
                     }else{
-                        //codigo c3@ 
+                        RESULT=g.generarCodigoOperaciones("GE",v1,v2,false); 
                     }
                 }else if(v1.esEntero()){
                     if(!v2.esEntero()){
                         errorEncontrado();
                         report_error("Se esperaba un entero y se ha recibido: \""+v2+"\"", v2);
                     }else{
-                        //codigo c3@ 
+                        RESULT=g.generarCodigoOperaciones("GE",v1,v2,false); 
                     }
                 }else{
                     if(!v2.esNull()){
                         errorEncontrado();
                         report_error("Se esperaba un null y se ha recibido: \""+v2+"\"", v2);
                     }else{
-                        //codigo c3@ 
+                        RESULT=g.generarCodigoOperaciones("GE",v1,v2,false); 
                     }
                 }
             
@@ -1356,7 +1360,7 @@ class CUP$Parser$actions {
           /*. . . . . . . . . . . . . . . . . . . .*/
           case 56: // Expresiones ::= Operaciones MAYOR Operaciones 
             {
-              Object RESULT =null;
+              TipoDato RESULT =null;
 		int v1left = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).left;
 		int v1right = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).right;
 		TipoDato v1 = (TipoDato)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-2)).value;
@@ -1369,21 +1373,21 @@ class CUP$Parser$actions {
                         errorEncontrado();
                         report_error("Se esperaba un boolean y se ha recibido: \""+v2+"\"", v2);
                     }else{
-                        //codigo c3@ 
+                        RESULT=g.generarCodigoOperaciones("GT",v1,v2,false);  
                     }
                 }else if(v1.esEntero()){
                     if(!v2.esEntero()){
                         errorEncontrado();
                         report_error("Se esperaba un entero y se ha recibido: \""+v2+"\"", v2);
                     }else{
-                        //codigo c3@ 
+                        RESULT=g.generarCodigoOperaciones("GT",v1,v2,false); 
                     }
                 }else{
                     if(!v2.esNull()){
                         errorEncontrado();
                         report_error("Se esperaba un null y se ha recibido: \""+v2+"\"", v2);
                     }else{
-                        //codigo c3@ 
+                        RESULT=g.generarCodigoOperaciones("GT",v1,v2,false); 
                     }
                 }
             
@@ -1394,7 +1398,7 @@ class CUP$Parser$actions {
           /*. . . . . . . . . . . . . . . . . . . .*/
           case 57: // Expresiones ::= Operaciones MENORIGUAL Operaciones 
             {
-              Object RESULT =null;
+              TipoDato RESULT =null;
 		int v1left = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).left;
 		int v1right = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).right;
 		TipoDato v1 = (TipoDato)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-2)).value;
@@ -1407,21 +1411,21 @@ class CUP$Parser$actions {
                         errorEncontrado();
                         report_error("Se esperaba un boolean y se ha recibido: \""+v2+"\"", v2);
                     }else{
-                        //codigo c3@ 
+                        RESULT=g.generarCodigoOperaciones("LE",v1,v2,false);  
                     }
                 }else if(v1.esEntero()){
                     if(!v2.esEntero()){
                         errorEncontrado();
                         report_error("Se esperaba un entero y se ha recibido: \""+v2+"\"", v2);
                     }else{
-                        //codigo c3@ 
+                        RESULT=g.generarCodigoOperaciones("LE",v1,v2,false); 
                     }
                 }else{
                     if(!v2.esNull()){
                         errorEncontrado();
                         report_error("Se esperaba un null y se ha recibido: \""+v2+"\"", v2);
                     }else{
-                        //codigo c3@ 
+                        RESULT=g.generarCodigoOperaciones("LE",v1,v2,false); 
                     }
                 }
             
@@ -1432,7 +1436,7 @@ class CUP$Parser$actions {
           /*. . . . . . . . . . . . . . . . . . . .*/
           case 58: // Expresiones ::= Operaciones MENOR Operaciones 
             {
-              Object RESULT =null;
+              TipoDato RESULT =null;
 		int v1left = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).left;
 		int v1right = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).right;
 		TipoDato v1 = (TipoDato)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-2)).value;
@@ -1445,21 +1449,21 @@ class CUP$Parser$actions {
                         errorEncontrado();
                         report_error("Se esperaba un boolean y se ha recibido: \""+v2+"\"", v2);
                     }else{
-                        //codigo c3@ 
+                        RESULT=g.generarCodigoOperaciones("LT",v1,v2,false); 
                     }
                 }else if(v1.esEntero()){
                     if(!v2.esEntero()){
                         errorEncontrado();
                         report_error("Se esperaba un entero y se ha recibido: \""+v2+"\"", v2);
                     }else{
-                        //codigo c3@ 
+                        RESULT=g.generarCodigoOperaciones("LT",v1,v2,false);  
                     }
                 }else{
                     if(!v2.esNull()){
                         errorEncontrado();
                         report_error("Se esperaba un null y se ha recibido: \""+v2+"\"", v2);
                     }else{
-                        //codigo c3@ 
+                        RESULT=g.generarCodigoOperaciones("LT",v1,v2,false);  
                     }
                 }
             
@@ -1470,13 +1474,13 @@ class CUP$Parser$actions {
           /*. . . . . . . . . . . . . . . . . . . .*/
           case 59: // Expresiones ::= NOT Operaciones 
             {
-              Object RESULT =null;
+              TipoDato RESULT =null;
 		int vleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int vright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		TipoDato v = (TipoDato)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
 		
                 if(v.esBoolean()){
-                    //codigo c3@
+                    RESULT=g.generarCodigoOperacionesNotResta("NOT",v,false);
                 }else{
                     errorEncontrado();
                     report_error("Se esperaba un boolean y se ha recibido: \""+v+"\"", v);
@@ -1489,7 +1493,7 @@ class CUP$Parser$actions {
           /*. . . . . . . . . . . . . . . . . . . .*/
           case 60: // OperacionesAritmeticas ::= Operaciones SUMA Operaciones 
             {
-              Object RESULT =null;
+              TipoDato RESULT =null;
 		int v1left = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).left;
 		int v1right = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).right;
 		TipoDato v1 = (TipoDato)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-2)).value;
@@ -1505,19 +1509,7 @@ class CUP$Parser$actions {
                     errorEncontrado();
                     report_error("Se esperaba un entero y se ha recibido: \""+v2+"\"", v2);
                 }
-                String destino = g.getVariable();
-                if(v1.tieneID() || v2.tieneID()){
-                    if(v1.tieneID() && v2.tieneID()){
-                        g.add("ADD, op1="+v1.getID()+", op2="+v2.getID()+",destino="+destino);
-                    }else if(v1.tieneID()){
-                        g.add("ADD, op1="+v1.getID()+", op2="+v2.getValorEntero()+",destino="+destino);
-                    }else{
-                        g.add("ADD, op1="+v1.getValorEntero()+", op2="+v2.getID()+",destino="+destino);
-                    }
-                }else{
-                    g.add("ADD, op1="+v1.getValorEntero()+", op2="+v2.getValorEntero()+",destino="+destino);
-                }
-                tv.add(new TipoDato(0,destino));
+                RESULT=g.generarCodigoOperaciones("ADD",v1,v2,true);
             
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("OperacionesAritmeticas",24, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -1526,7 +1518,7 @@ class CUP$Parser$actions {
           /*. . . . . . . . . . . . . . . . . . . .*/
           case 61: // OperacionesAritmeticas ::= Operaciones RESTA Operaciones 
             {
-              Object RESULT =null;
+              TipoDato RESULT =null;
 		int v1left = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).left;
 		int v1right = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).right;
 		TipoDato v1 = (TipoDato)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-2)).value;
@@ -1542,19 +1534,7 @@ class CUP$Parser$actions {
                     errorEncontrado();
                     report_error("Se esperaba un entero y se ha recibido: \""+v2+"\"", v2);
                 }
-                String destino = g.getVariable();
-                if(v1.tieneID() || v2.tieneID()){
-                    if(v1.tieneID() && v2.tieneID()){
-                        g.add("SUB, op1="+v1.getID()+", op2="+v2.getID()+",destino="+destino);
-                    }else if(v1.tieneID()){
-                        g.add("SUB, op1="+v1.getID()+", op2="+v2.getValorEntero()+",destino="+destino);
-                    }else{
-                        g.add("SUB, op1="+v1.getValorEntero()+", op2="+v2.getID()+",destino="+destino);
-                    }
-                }else{
-                    g.add("SUB, op1="+v1.getValorEntero()+", op2="+v2.getValorEntero()+",destino="+destino);
-                }
-                tv.add(new TipoDato(0,destino));
+                RESULT=g.generarCodigoOperaciones("SUB",v1,v2,true);
             
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("OperacionesAritmeticas",24, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -1563,7 +1543,7 @@ class CUP$Parser$actions {
           /*. . . . . . . . . . . . . . . . . . . .*/
           case 62: // OperacionesAritmeticas ::= Operaciones MULTIPLICACION Operaciones 
             {
-              Object RESULT =null;
+              TipoDato RESULT =null;
 		int v1left = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).left;
 		int v1right = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).right;
 		TipoDato v1 = (TipoDato)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-2)).value;
@@ -1579,19 +1559,7 @@ class CUP$Parser$actions {
                     errorEncontrado();
                     report_error("Se esperaba un entero y se ha recibido: \""+v2+"\"", v2);
                 }
-                String destino = g.getVariable();
-                if(v1.tieneID() || v2.tieneID()){
-                    if(v1.tieneID() && v2.tieneID()){
-                        g.add("PROD, op1="+v1.getID()+", op2="+v2.getID()+",destino="+destino);
-                    }else if(v1.tieneID()){
-                        g.add("PROD, op1="+v1.getID()+", op2="+v2.getValorEntero()+",destino="+destino);
-                    }else{
-                        g.add("PROD, op1="+v1.getValorEntero()+", op2="+v2.getID()+",destino="+destino);
-                    }
-                }else{
-                    g.add("PROD, op1="+v1.getValorEntero()+", op2="+v2.getValorEntero()+",destino="+destino);
-                }
-                tv.add(new TipoDato(0,destino));
+                RESULT=g.generarCodigoOperaciones("MULT",v1,v2,true);
             
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("OperacionesAritmeticas",24, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -1600,7 +1568,7 @@ class CUP$Parser$actions {
           /*. . . . . . . . . . . . . . . . . . . .*/
           case 63: // OperacionesAritmeticas ::= Operaciones DIVISION Operaciones 
             {
-              Object RESULT =null;
+              TipoDato RESULT =null;
 		int v1left = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).left;
 		int v1right = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).right;
 		TipoDato v1 = (TipoDato)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-2)).value;
@@ -1616,19 +1584,7 @@ class CUP$Parser$actions {
                     errorEncontrado();
                     report_error("Se esperaba un entero y se ha recibido: \""+v2+"\"", v2);
                 }
-                String destino = g.getVariable();
-                if(v1.tieneID() || v2.tieneID()){
-                    if(v1.tieneID() && v2.tieneID()){
-                        g.add("DIV, op1="+v1.getID()+", op2="+v2.getID()+",destino="+destino);
-                    }else if(v1.tieneID()){
-                        g.add("DIV, op1="+v1.getID()+", op2="+v2.getValorEntero()+",destino="+destino);
-                    }else{
-                        g.add("DIV, op1="+v1.getValorEntero()+", op2="+v2.getID()+",destino="+destino);
-                    }
-                }else{
-                    g.add("DIV, op1="+v1.getValorEntero()+", op2="+v2.getValorEntero()+",destino="+destino);
-                }
-                tv.add(new TipoDato(0,destino));
+                RESULT=g.generarCodigoOperaciones("DIV",v1,v2,true);
             
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("OperacionesAritmeticas",24, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -1637,7 +1593,7 @@ class CUP$Parser$actions {
           /*. . . . . . . . . . . . . . . . . . . .*/
           case 64: // OperacionesAritmeticas ::= Operaciones MODULO Operaciones 
             {
-              Object RESULT =null;
+              TipoDato RESULT =null;
 		int v1left = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).left;
 		int v1right = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).right;
 		TipoDato v1 = (TipoDato)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-2)).value;
@@ -1653,19 +1609,7 @@ class CUP$Parser$actions {
                     errorEncontrado();
                     report_error("Se esperaba un entero y se ha recibido: \""+v2+"\"", v2);
                 }
-                String destino = g.getVariable();
-                if(v1.tieneID() || v2.tieneID()){
-                    if(v1.tieneID() && v2.tieneID()){
-                        g.add("MOD, op1="+v1.getID()+", op2="+v2.getID()+",destino="+destino);
-                    }else if(v1.tieneID()){
-                        g.add("MOD, op1="+v1.getID()+", op2="+v2.getValorEntero()+",destino="+destino);
-                    }else{
-                        g.add("MOD, op1="+v1.getValorEntero()+", op2="+v2.getID()+",destino="+destino);
-                    }
-                }else{
-                    g.add("MOD, op1="+v1.getValorEntero()+", op2="+v2.getValorEntero()+",destino="+destino);
-                }
-                tv.add(new TipoDato(0,destino));
+                RESULT=g.generarCodigoOperaciones("MOD",v1,v2,true);
             
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("OperacionesAritmeticas",24, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -1674,7 +1618,7 @@ class CUP$Parser$actions {
           /*. . . . . . . . . . . . . . . . . . . .*/
           case 65: // OperacionesAritmeticas ::= RESTA Operaciones 
             {
-              Object RESULT =null;
+              TipoDato RESULT =null;
 		int vleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int vright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		TipoDato v = (TipoDato)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
@@ -1682,14 +1626,9 @@ class CUP$Parser$actions {
                 if(!v.esEntero()){
                     errorEncontrado();
                     report_error("Se esperaba un entero y se ha recibido: \""+v+"\"", v);
-                }
-                String destino = g.getVariable();
-                if(v.tieneID()){
-                    g.add("NEG, op1="+v.getID()+", op2= ,destino="+destino);
                 }else{
-                    g.add("NEG, op1="+v.getValorEntero()+", op2= ,destino="+destino);
+                    RESULT=g.generarCodigoOperacionesNotResta("NEG",v,true);
                 }
-                tv.add(new TipoDato(0,destino));
             
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("OperacionesAritmeticas",24, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }

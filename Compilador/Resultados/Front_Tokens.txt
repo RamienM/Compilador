@@ -1,0 +1,48 @@
+Simbolo-> Palabra Reservada: MAIN
+Simbolo-> Caracter: LLAVE IZQUIERDA
+Simbolo-> Palabra Reservada: INT
+Simbolo-> Identificador: a
+Simbolo-> Caracter: ASIGNACION
+Simbolo-> Entero: 10
+Simbolo-> Operación: MULTIPLICACION
+Simbolo-> Entero: 20
+Simbolo-> Operación: SUMA
+Simbolo-> Entero: 40
+Simbolo-> Operación: DIVISION
+Simbolo-> Entero: 2
+Simbolo-> Caracter: PUNTO Y COMA
+Simbolo-> Palabra Reservada: INT
+Simbolo-> Identificador: b
+Simbolo-> Caracter: ASIGNACION
+Simbolo-> Entero: 10
+Simbolo-> Operación: SUMA
+Simbolo-> Entero: 2
+Simbolo-> Operación: MULTIPLICACION
+Simbolo-> Identificador: a
+Simbolo-> Caracter: PUNTO Y COMA
+Simbolo-> Palabra Reservada: INT
+Simbolo-> Identificador: c
+Simbolo-> Caracter: ASIGNACION
+Simbolo-> Identificador: b
+Simbolo-> Operación: RESTA
+Simbolo-> Entero: 6
+Simbolo-> Caracter: PUNTO Y COMA
+Simbolo-> Palabra Reservada: INT
+Simbolo-> Identificador: d
+Simbolo-> Caracter: ASIGNACION
+Simbolo-> Entero: 1
+Simbolo-> Operación: MULTIPLICACION
+Simbolo-> Entero: 1
+Simbolo-> Operación: DIVISION
+Simbolo-> Entero: 1
+Simbolo-> Operación: SUMA
+Simbolo-> Entero: 1
+Simbolo-> Caracter: PUNTO Y COMA
+Simbolo-> Palabra Reservada: INT
+Simbolo-> Identificador: e
+Simbolo-> Caracter: ASIGNACION
+Simbolo-> Identificador: c
+Simbolo-> Operación: MODULO
+Simbolo-> Identificador: d
+Simbolo-> Caracter: PUNTO Y COMA
+Simbolo-> Caracter: LLAVE DERECHA

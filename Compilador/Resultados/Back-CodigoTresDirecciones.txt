@@ -1,0 +1,19 @@
+MULT, op1=10, op2=20,destino=t0
+DIV, op1=40, op2=2,destino=t1
+ADD, op1=t0, op2=t1,destino=t2
+ASIG, op1=t2, op2= ,destino=a
+ASIG, op1=a, op2= ,destino=t3
+MULT, op1=2, op2=a,destino=t4
+ADD, op1=10, op2=t4,destino=t5
+ASIG, op1=t5, op2= ,destino=b
+ASIG, op1=b, op2= ,destino=t6
+SUB, op1=b, op2=6,destino=t7
+ASIG, op1=t7, op2= ,destino=c
+DIV, op1=1, op2=1,destino=t8
+MULT, op1=1, op2=t8,destino=t9
+ADD, op1=t9, op2=1,destino=t10
+ASIG, op1=t10, op2= ,destino=d
+ASIG, op1=c, op2= ,destino=t11
+ASIG, op1=d, op2= ,destino=t12
+MOD, op1=c, op2=d,destino=t13
+ASIG, op1=t13, op2= ,destino=e
